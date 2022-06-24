@@ -21,7 +21,16 @@ public class WriteTickTimeHandler {
         if (lastUpdates.getOrDefault(connection.getBungeeCordName(), 0L) < System.currentTimeMillis() - 1000 || connection.getTps() == -1) {
             lastUpdates.put(connection.getBungeeCordName(), System.currentTimeMillis());
 
-            ServerConnection.broadcastAll(new ServerInfoUpdateMessage(connection.getBungeeCordName(), (int) connection.getTimer().averageInMillis(), (float) connection.getTps()));
+            ServerConnection.broadcastAll(
+                    new ServerInfoUpdateMessage(
+                            connection.getBungeeCordName(),
+                            (int) connection.getTimer().averageInMillis(),
+                            (float) connection.getTps(),
+                            connection.getChunksloaded(),
+                            connection.getMemoryfree(),
+                            connection.getEntities()
+                    )
+            );
         }
     }
 }

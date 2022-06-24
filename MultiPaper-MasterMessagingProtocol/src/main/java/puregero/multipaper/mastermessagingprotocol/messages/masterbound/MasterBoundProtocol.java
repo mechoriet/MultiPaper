@@ -45,6 +45,7 @@ public class MasterBoundProtocol extends Protocol<MasterBoundMessage> {
         addMessage(WritePlayerMessage.class, WritePlayerMessage::new);
         addMessage(WriteStatsMessage.class, WriteStatsMessage::new);
         addMessage(WriteTickTimeMessage.class, WriteTickTimeMessage::new);
+        addMessage(WriteMetricsMessage.class,WriteMetricsMessage::new);
         addMessage(WriteUidMessage.class, WriteUidMessage::new);
     }
 

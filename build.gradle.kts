@@ -82,7 +82,7 @@ paperweight {
             )
 
             val paperLatestCommitJson = layout.cache.resolve("paperLatestCommit.json");
-            download.get().download("https://api.github.com/repos/PaperMC/Paper/commits/master", paperLatestCommitJson);
+            download.get().download("https://api.github.com/repos/PaperMC/Paper/commits/ver/1.18.2", paperLatestCommitJson);
             val paperLatestCommit = gson.fromJson<paper.libs.com.google.gson.JsonObject>(paperLatestCommitJson)["sha"].asString;
 
             copy {

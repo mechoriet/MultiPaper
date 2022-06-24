@@ -24,6 +24,10 @@ public class ServerConnection extends MasterBoundMessageHandler {
     public final HashSet<UUID> playerUUIDs = new HashSet<>();
     private final List<Player> players = new ArrayList<>();
     private double tps;
+
+    private int chunksloaded;
+    private long memoryfree;
+    private int entities;
     private int port = -1;
     private String host;
 
@@ -194,6 +198,29 @@ public class ServerConnection extends MasterBoundMessageHandler {
         this.host = host;
     }
 
+    public int getChunksloaded() {
+        return chunksloaded;
+    }
+
+    public void setChunksloaded(int chunksloaded) {
+        this.chunksloaded = chunksloaded;
+    }
+
+    public long getMemoryfree() {
+        return memoryfree;
+    }
+
+    public void setMemoryfree(long memoryfree) {
+        this.memoryfree = memoryfree;
+    }
+
+    public int getEntities() {
+        return entities;
+    }
+
+    public void setEntities(int entities) {
+        this.entities = entities;
+    }
     @Override
     public void handle(CallDataStorageMessage message) {
         CallDataStorageHandler.handle(this, message);
@@ -382,6 +409,11 @@ public class ServerConnection extends MasterBoundMessageHandler {
     @Override
     public void handle(WriteTickTimeMessage message) {
         WriteTickTimeHandler.handle(this, message);
+    }
+
+    @Override
+    public void handle(WriteMetricsMessage message) {
+        WriteMetricsHandler.handle(this,message);
     }
 
     @Override

@@ -1,0 +1,134 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: mechoriet <kevinworm92@gmail.com>
+Date: Fri, 24 Jun 2022 11:26:43 +0200
+Subject: [PATCH] add chunks/memory/entities to servers commnad
+
+
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 1813d0284a2e0400a7551cc5520e333d4ed33ade..1d0b5592a096a9116d2f1c5639a05e9d9c55f0f6 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1534,6 +1534,17 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+         tickTimes60s.add(this.tickCount, l);
+         // Paper end
+ 
++        if(MinecraftServer.currentTick % 100 == 0) {
++            int chunksloaded = 0;
++            long memoryfree;
++            int entities = 0;
++            for(org.bukkit.World world : Bukkit.getWorlds()) {
++                chunksloaded += Arrays.stream(world.getLoadedChunks()).filter(org.bukkit.Chunk::isLocalChunk).count();
++                entities += world.getEntities().stream().filter(org.bukkit.entity.Entity::isInLocalChunk).count();
++            }
++            memoryfree = Runtime.getRuntime().freeMemory() / 1024 / 1024;
++            MultiPaper.sendMetrics(chunksloaded,memoryfree,entities);
++        }
+         MultiPaper.sendTickTime(i1 - i, recentTps[0]); // MultiPaper
+         this.frameTimer.logFrameDuration(i1 - i);
+         this.profiler.pop();
+diff --git a/src/main/java/puregero/multipaper/ExternalServer.java b/src/main/java/puregero/multipaper/ExternalServer.java
+index ceaad2b5af855905ad1b87e7308fb354304819b1..874cec1b56060cbe3afd7923fc00b4a9fdd247fd 100644
+--- a/src/main/java/puregero/multipaper/ExternalServer.java
++++ b/src/main/java/puregero/multipaper/ExternalServer.java
+@@ -5,6 +5,10 @@ public class ExternalServer {
+     private final boolean me;
+     private int averageTickTime;
+     private double tps;
++
++    private int chunksloaded;
++    private long memoryFree;
++    private int entities;
+     private long lastAlive;
+     private ExternalServerConnection connection;
+ 
+@@ -49,6 +53,29 @@ public class ExternalServer {
+         this.tps = tps;
+     }
+ 
++    public int getChunksloaded() {
++        return chunksloaded;
++    }
++
++    public void setChunksloaded(int chunksloaded) {
++        this.chunksloaded = chunksloaded;
++    }
++
++    public long getMemoryFree() {
++        return memoryFree;
++    }
++
++    public void setMemoryFree(long memoryFree) {
++        this.memoryFree = memoryFree;
++    }
++
++    public int getEntities() {
++        return entities;
++    }
++
++    public void setEntities(int entities) {
++        this.entities = entities;
++    }
+     public void setConnection(ExternalServerConnection connection) {
+         this.connection = connection;
+     }
+diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
+index 1c8400528851e8fcc1358b41f944e5d02fede5ce..3a5218614eb0ae3f20da6455f499a7daedc40a71 100644
+--- a/src/main/java/puregero/multipaper/MultiPaper.java
++++ b/src/main/java/puregero/multipaper/MultiPaper.java
+@@ -182,6 +182,10 @@ public class MultiPaper {
+         getConnection().send(new WriteTickTimeMessage(time, (float) tps));
+     }
+ 
++    public static void sendMetrics(int chunksloaded, long memoryfree, int entities) {
++        getConnection().send(new WriteMetricsMessage(chunksloaded, memoryfree, entities));
++    }
++
+     public static CompletableFuture<Boolean> sendPlayerConnect(ServerPlayer player) {
+         CompletableFuture<Boolean> future = new CompletableFuture<>();
+         getConnection().send(new PlayerConnectMessage(player.getUUID()), message -> {
+diff --git a/src/main/java/puregero/multipaper/MultiPaperConnection.java b/src/main/java/puregero/multipaper/MultiPaperConnection.java
+index b99469459a2f4268792217c06c1fc33cd2b67b43..201b67571d2444c1c483cef293bcd38ebc989618 100644
+--- a/src/main/java/puregero/multipaper/MultiPaperConnection.java
++++ b/src/main/java/puregero/multipaper/MultiPaperConnection.java
+@@ -184,6 +184,9 @@ public class MultiPaperConnection extends ServerBoundMessageHandler {
+         ExternalServer server = serversMap.computeIfAbsent(message.name, key -> new ExternalServer(key, key.equals(myName)));
+         server.setAverageTickTime(message.averageTickTime);
+         server.setTps(message.tps);
++        server.setChunksloaded(message.chunksloaded);
++        server.setMemoryFree(message.memoryfree);
++        server.setEntities(message.entities);
+         server.setLastAlive(System.currentTimeMillis());
+     }
+ 
+diff --git a/src/main/java/puregero/multipaper/commands/ServersCommand.java b/src/main/java/puregero/multipaper/commands/ServersCommand.java
+index e29965bb7518fa4b22f2a73bcd8db02d4e00f395..a9564338eb7c7c5cffa70c523985da0517557411 100644
+--- a/src/main/java/puregero/multipaper/commands/ServersCommand.java
++++ b/src/main/java/puregero/multipaper/commands/ServersCommand.java
+@@ -46,12 +46,24 @@ public class ServersCommand extends Command {
+             if (players != 1) {
+                 playersString += "s";
+             }
+-
++            StringBuilder builder = new StringBuilder();
+             if (!server.isAlive()) {
+-                sender.sendMessage(ChatColor.DARK_GRAY + "[" + server.getName() + "] " + server.getAverageTickTime() + "ms, " + tpsString + ", " + playersString);
++                builder.append(ChatColor.DARK_GRAY)
++                        .append("[")
++                        .append(server.getName())
++                        .append("] ");
+             } else {
+-                sender.sendMessage(ChatColor.GREEN + "[" + (server.isMe() ? ChatColor.GOLD : "") + server.getName() + ChatColor.GREEN + "] " + tickTime + ", " + tpsString + ", " + playersString);
++                builder.append(ChatColor.GREEN + "[").append(server.isMe() ? ChatColor.GOLD : "").append(server.getName()).append(ChatColor.GREEN).append("] ");
+             }
++            builder
++                    .append(server.getAverageTickTime()).append("ms, ")
++                    .append(tpsString).append(", ")
++                    .append(playersString).append(", ")
++                    .append(server.getMemoryFree()).append("mb Free, ")
++                    .append(server.getChunksloaded()).append(" chunks loaded, ")
++                    .append("( E: ").append(server.getEntities()).append(")");
++
++            sender.sendMessage(builder.toString());
+         }
+ 
+         return true;

@@ -89,5 +89,7 @@ public abstract class MasterBoundMessageHandler extends MessageHandler<MasterBou
 
     public abstract void handle(WriteTickTimeMessage message);
 
+    public abstract void handle(WriteMetricsMessage message);
+
     public abstract void handle(WriteUidMessage message);
 }
