@@ -20,13 +20,13 @@ index c45b5ab6776f3ac79f856c3a6467c510e20db25a..53ca673c9a98c580403232972d11a02f
          this.action = type;
          this.usingSecondaryAction = playerSneaking;
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index b1c0a41ef719bb9d3bf96b1240364b771af2c07d..25dc4bca5645e8f8db820c8e9373a89fad537c8f 100644
+index ee00ec65f8beff06bc0e7dadf58439f9e93efe63..c87edab0deb9d1f6aaeba2f9f186ba0a0b5663eb 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -212,10 +212,7 @@ import org.bukkit.inventory.EquipmentSlot;
+@@ -227,10 +227,7 @@ import org.bukkit.inventory.CraftingInventory;
+ import org.bukkit.inventory.EquipmentSlot;
  import org.bukkit.inventory.InventoryView;
  import org.bukkit.inventory.SmithingInventory;
- import co.aikar.timings.MinecraftTimings; // Paper
 -import puregero.multipaper.ExternalPlayer;
 -import puregero.multipaper.MultiPaper;
 -import puregero.multipaper.MultiPaperInventoryHandler;
@@ -35,7 +35,7 @@ index b1c0a41ef719bb9d3bf96b1240364b771af2c07d..25dc4bca5645e8f8db820c8e9373a89f
  import puregero.multipaper.externalserverprotocol.PlayerRemovePacket;
  // CraftBukkit end
  
-@@ -2476,6 +2473,8 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -2662,6 +2659,8 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
          this.player.resetLastActionTime();
          this.player.setShiftKeyDown(packet.isUsingSecondaryAction());
          if (entity != null) {
@@ -45,18 +45,18 @@ index b1c0a41ef719bb9d3bf96b1240364b771af2c07d..25dc4bca5645e8f8db820c8e9373a89f
                  return;
              }
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 3fdbce8e17e89c008db959183152552fe3260883..24a8b0a053365f088a4c4f4f56d04aa89b1f8bf7 100644
+index cd01a3b4f3850a9acb08c1efef7780564167fdb0..6427f049d716c3bedb97ade670cdc8466d1d2264 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -49,6 +49,7 @@ import net.minecraft.network.chat.HoverEvent;
- import net.minecraft.network.chat.MutableComponent;
+@@ -51,6 +51,7 @@ import net.minecraft.network.chat.MutableComponent;
  import net.minecraft.network.protocol.Packet;
  import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+ import net.minecraft.network.protocol.game.VecDeltaCodec;
 +import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
  import net.minecraft.network.syncher.EntityDataAccessor;
  import net.minecraft.network.syncher.EntityDataSerializers;
  import net.minecraft.network.syncher.SynchedEntityData;
-@@ -92,6 +93,7 @@ import net.minecraft.world.level.block.*;
+@@ -95,6 +96,7 @@ import net.minecraft.world.level.block.*;
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.level.block.state.properties.BlockStateProperties;
  import net.minecraft.world.level.border.WorldBorder;
@@ -64,7 +64,7 @@ index 3fdbce8e17e89c008db959183152552fe3260883..24a8b0a053365f088a4c4f4f56d04aa8
  import net.minecraft.world.level.dimension.DimensionType;
  import net.minecraft.world.level.dimension.LevelStem;
  import net.minecraft.world.level.entity.EntityAccess;
-@@ -142,10 +144,13 @@ import org.bukkit.event.entity.EntityPortalEvent;
+@@ -145,10 +147,13 @@ import org.bukkit.event.entity.EntityPortalEvent;
  import org.bukkit.event.entity.EntityPoseChangeEvent;
  import org.bukkit.event.player.PlayerTeleportEvent;
  import org.bukkit.plugin.PluginManager;
@@ -78,7 +78,7 @@ index 3fdbce8e17e89c008db959183152552fe3260883..24a8b0a053365f088a4c4f4f56d04aa8
  // CraftBukkit end
  
  public abstract class Entity implements Nameable, EntityAccess, CommandSource {
-@@ -2580,6 +2585,12 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -2668,6 +2673,12 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
                  }).forEach((entity2) -> {
                      CriteriaTriggers.START_RIDING_TRIGGER.trigger((ServerPlayer) entity2);
                  });
@@ -91,7 +91,7 @@ index 3fdbce8e17e89c008db959183152552fe3260883..24a8b0a053365f088a4c4f4f56d04aa8
                  return true;
              }
          }
-@@ -2611,6 +2622,14 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -2699,6 +2710,14 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
  
              this.vehicle = null;
              if (!entity.removePassenger(this, suppressCancellation)) this.vehicle = entity; // CraftBukkit // Paper
@@ -107,10 +107,10 @@ index 3fdbce8e17e89c008db959183152552fe3260883..24a8b0a053365f088a4c4f4f56d04aa8
  
      }
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index ba6d1e9b56e53decd08fbfbbe02f67e4776621f5..03bd0c1812ad8ac4eb9c6ec212259eecae1130c9 100644
+index 065285f45ea6e3655521464eb1e883ad78167122..36c1b695c188e10a765419b63bfb47839e8c1a9f 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -123,6 +123,7 @@ import org.bukkit.event.entity.EntityCombustByEntityEvent;
+@@ -124,6 +124,7 @@ import org.bukkit.event.entity.EntityCombustByEntityEvent;
  import org.bukkit.event.entity.EntityExhaustionEvent;
  import org.bukkit.event.player.PlayerDropItemEvent;
  import org.bukkit.event.player.PlayerVelocityEvent;
@@ -118,7 +118,7 @@ index ba6d1e9b56e53decd08fbfbbe02f67e4776621f5..03bd0c1812ad8ac4eb9c6ec212259eec
  // CraftBukkit end
  
  public abstract class Player extends LivingEntity {
-@@ -618,6 +619,7 @@ public abstract class Player extends LivingEntity {
+@@ -626,6 +627,7 @@ public abstract class Player extends LivingEntity {
      }
  
      private void touch(Entity entity) {

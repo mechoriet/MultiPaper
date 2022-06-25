@@ -5,10 +5,10 @@ Subject: [PATCH] Airplane Configuration
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 7d5fe2c89e066c5a98566a7b00a1052b9a9553ea..dc6567bbad7148d1c55e29be46f380e2f9d7cdd0 100644
+index 2420e733bb98b07ae2615d7facc571974427ac52..50fb3c551fa58e5fa1d55d218b6449b897d239ee 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -49,6 +49,12 @@ dependencies {
+@@ -51,6 +51,12 @@ dependencies {
      }
      // Pufferfish end
  
@@ -35,23 +35,6 @@ index 2cc44fbf8e5bd436b6d4e19f6c06b351e750cb31..d1fbb3e087f6cb02d701cf3287bcc989
              pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)) // Pufferfish
          ));
  
-diff --git a/src/main/java/com/destroystokyo/paper/PaperConfig.java b/src/main/java/com/destroystokyo/paper/PaperConfig.java
-index 525cd8e98a68aac2bf3e1542e46bb8b8b9a101b2..29f089b1a5b0e2a2e99a1c8a7ca8d8b0c6d4f0d5 100644
---- a/src/main/java/com/destroystokyo/paper/PaperConfig.java
-+++ b/src/main/java/com/destroystokyo/paper/PaperConfig.java
-@@ -256,10 +256,11 @@ public class PaperConfig {
-             TimingsManager.url += "/";
-         }
-         TimingsManager.privacy = getBoolean("timings.server-name-privacy", false);
--        TimingsManager.hiddenConfigs = getList("timings.hidden-config-entries", Lists.newArrayList("database", "settings.bungeecord-addresses", "settings.velocity-support.secret"));
-+        TimingsManager.hiddenConfigs = getList("timings.hidden-config-entries", Lists.newArrayList("database", "settings.bungeecord-addresses", "settings.velocity-support.secret", "web-services.token")); // Airplane
-         if (!TimingsManager.hiddenConfigs.contains("settings.velocity-support.secret")) {
-             TimingsManager.hiddenConfigs.add("settings.velocity-support.secret");
-         }
-+        if (!TimingsManager.hiddenConfigs.contains("web-services.token")) TimingsManager.hiddenConfigs.add("web-services.token"); // Airplane
-         int timingHistoryInterval = getInt("timings.history-interval", 300);
-         int timingHistoryLength = getInt("timings.history-length", 3600);
-         timingsServerName = getString("timings.server-name", "Unknown Server");
 diff --git a/src/main/java/gg/airplane/AirplaneCommand.java b/src/main/java/gg/airplane/AirplaneCommand.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..89c89e633f14b5820147e734b1b7ad8cadfdce80
@@ -316,12 +299,26 @@ index 0000000000000000000000000000000000000000..807cf274619b8f7be839e249cb62b981
 +        MinecraftServer.getServer().server.getCommandMap().register("airplane", "Airplane", new AirplaneCommand());
 +    }
 +}
+diff --git a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
+index 80804b54f6cc7c7b26db6cc2c6c33b16eaec1c3f..87c7ec9e2a5130f07a6db9b72d614e8c99f6339e 100644
+--- a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
++++ b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
+@@ -59,7 +59,8 @@ public class GlobalConfiguration extends ConfigurationPart {
+         public boolean serverNamePrivacy = false;
+         public List<String> hiddenConfigEntries = List.of(
+             "database",
+-            "proxies.velocity.secret"
++            "proxies.velocity.secret",
++            "web-services.token"
+         );
+         public int historyInterval = 300;
+         public int historyLength = 3600;
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index f723445ac4745742ffe528d189b0145120777d9e..cf0a60c0f8ab55195f2d3fcbbcc4398c578105ed 100644
+index 0ea9364fdda05a9611b230ad039673ac90925db2..7450e7ff8a86f2749529f81c7ba538d1ea4ef2ee 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -235,6 +235,8 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
-         io.papermc.paper.util.ObfHelper.INSTANCE.getClass(); // load mappings for stacktrace deobf and etc.
+@@ -226,6 +226,8 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // load version history now
          io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider
          // Paper end
 +        gg.airplane.AirplaneConfig.load(); // Airplane - config

@@ -5,10 +5,10 @@ Subject: [PATCH] Sync difficulty
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index eb6c8e67b6ccc74a091b2978fc59a1aa82ec1d79..25edcb070a51d6c9d225ad3371c3933f301eb049 100644
+index c86c175d76bd1608f5a7dd61fc2eabfc5ffb6408..8f8b99e72c058100894162aebda202bcdbc3812c 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -186,6 +186,7 @@ import org.bukkit.event.server.ServerLoadEvent;
+@@ -181,6 +181,7 @@ import org.bukkit.event.server.ServerLoadEvent;
  import co.aikar.timings.MinecraftTimings; // Paper
  import puregero.multipaper.MultiPaper;
  import puregero.multipaper.MultiPaperExternalBlocksHandler;
@@ -16,7 +16,7 @@ index eb6c8e67b6ccc74a091b2978fc59a1aa82ec1d79..25edcb070a51d6c9d225ad3371c3933f
  
  public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTask> implements CommandSource, AutoCloseable {
  
-@@ -1806,6 +1807,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1765,6 +1766,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              level.setSpawnSettings(worldData.getDifficulty() != Difficulty.PEACEFUL && ((DedicatedServer) this).settings.getProperties().spawnMonsters, this.isSpawningAnimals());
              // this.getPlayerList().getPlayers().forEach(this::sendDifficultyUpdate);
              // Paper end

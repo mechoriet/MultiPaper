@@ -5,7 +5,7 @@ Subject: [PATCH] Load entities async
 
 
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/EntityStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/EntityStorage.java
-index 18504b91ff4f10e5f06dd2f0cca7fb4d41ff172f..ef3d23bc931a809f2f85d2eab079a8203893b0ab 100644
+index 7cfb48ae549a897dbd7ce1742f3fc63b8cafe501..55fc4ba575578a3bb642255073733c964d61d78e 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/EntityStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/EntityStorage.java
 @@ -9,15 +9,12 @@ import java.io.IOException;
@@ -44,7 +44,7 @@ index 18504b91ff4f10e5f06dd2f0cca7fb4d41ff172f..ef3d23bc931a809f2f85d2eab079a820
  
      public EntityStorage(ServerLevel world, Path path, DataFixer dataFixer, boolean dsync, Executor executor) {
          this.level = world;
-@@ -44,9 +43,39 @@ public class EntityStorage implements EntityPersistentStorage<Entity> {
+@@ -44,15 +43,45 @@ public class EntityStorage implements EntityPersistentStorage<Entity> {
          this.worker = new IOWorker(path, dsync, "entities");
      }
  
@@ -80,11 +80,28 @@ index 18504b91ff4f10e5f06dd2f0cca7fb4d41ff172f..ef3d23bc931a809f2f85d2eab079a820
 +
      @Override
      public CompletableFuture<ChunkEntities<Entity>> loadEntities(ChunkPos pos) {
--        return this.emptyChunks.contains(pos.toLong()) ? CompletableFuture.completedFuture(emptyChunk(pos)) : this.worker.loadAsync(pos).thenApplyAsync((compound) -> {
-+        return this.emptyChunks.contains(pos.toLong()) ? CompletableFuture.completedFuture(emptyChunk(pos)) : loadAsync(pos).thenApplyAsync((compound) -> { // MultiPaper - replace this.worker.loadAsync(pos) with async chunk loading
-             if (compound == null) {
+-        return this.emptyChunks.contains(pos.toLong()) ? CompletableFuture.completedFuture(emptyChunk(pos)) : this.worker.loadAsync(pos).thenApplyAsync((nbt) -> {
+-            if (nbt.isEmpty()) {
++        return this.emptyChunks.contains(pos.toLong()) ? CompletableFuture.completedFuture(emptyChunk(pos)) : loadAsync(pos).thenApplyAsync((nbt) -> { // MultiPaper - replace this.worker.loadAsync(pos) with async chunk loading
++            if (nbt == null || nbt.size() == 0) {
                  // this.emptyChunks.add(pos.toLong()); // MultiPaper - don't cache empty chunks
                  return emptyChunk(pos);
+             } else {
+                 try {
+-                    ChunkPos chunkPos2 = readChunkPos(nbt.get());
++                    ChunkPos chunkPos2 = readChunkPos(nbt);
+                     if (!Objects.equals(pos, chunkPos2)) {
+                         LOGGER.error("Chunk file at {} is in the wrong location. (Expected {}, got {})", pos, pos, chunkPos2);
+                     }
+@@ -60,7 +89,7 @@ public class EntityStorage implements EntityPersistentStorage<Entity> {
+                     LOGGER.warn("Failed to parse chunk {} position info", pos, var6);
+                 }
+ 
+-                CompoundTag compoundTag = this.upgradeChunkTag(nbt.get());
++                CompoundTag compoundTag = this.upgradeChunkTag(nbt);
+                 ListTag listTag = compoundTag.getList("Entities", 10);
+                 List<Entity> list = EntityType.loadEntitiesRecursive(listTag, this.level).collect(ImmutableList.toImmutableList());
+                 return new ChunkEntities<>(pos, list);
 @@ -125,6 +154,13 @@ public class EntityStorage implements EntityPersistentStorage<Entity> {
  
      @Override

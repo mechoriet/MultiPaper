@@ -5,10 +5,10 @@ Subject: [PATCH] Add generic file syncing between servers
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index e0e57c2f71cbfdfa58e4e5491c9a815a404f843e..b510702ae33cc7ad99e50cf3d2bc6ca61d3cbdeb 100644
+index 9a90773511c414ca7d3fd485b45d972a7423ac9f..61f777c26f6e9ab9fead8d93a9b6d15ed02ba350 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -51,6 +51,8 @@ dependencies {
+@@ -53,6 +53,8 @@ dependencies {
      }
      // Pufferfish end
  
@@ -18,10 +18,10 @@ index e0e57c2f71cbfdfa58e4e5491c9a815a404f843e..b510702ae33cc7ad99e50cf3d2bc6ca6
      implementation("org.yaml:snakeyaml:1.28")
      implementation ("me.carleslc.Simple-YAML:Simple-Yaml:1.7.2") { // Airplane - more config
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 2ef91eb1c446fe7bf362ca1ce47b4ae5833eef29..580879b539cbec33320e2787f9e49cc11180b66e 100644
+index 05407084ac97115d0e23bb49d5c4e576cc661f3c..5ed2dbb01a30f51d6c1e1fd9d0c505c8b7b0d3f7 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
-@@ -61,6 +61,7 @@ import java.util.concurrent.atomic.AtomicReference;
+@@ -62,6 +62,7 @@ import java.util.concurrent.atomic.AtomicReference;
  import net.minecraft.SharedConstants;
  import puregero.multipaper.MultiPaper;
  import puregero.multipaper.MultiPaperConfig;
@@ -29,7 +29,7 @@ index 2ef91eb1c446fe7bf362ca1ce47b4ae5833eef29..580879b539cbec33320e2787f9e49cc1
  
  public class Main {
  
-@@ -105,9 +106,11 @@ public class Main {
+@@ -106,9 +107,11 @@ public class Main {
                  JvmProfiler.INSTANCE.start(Environment.SERVER);
              }
  
@@ -43,10 +43,10 @@ index 2ef91eb1c446fe7bf362ca1ce47b4ae5833eef29..580879b539cbec33320e2787f9e49cc1
              Bootstrap.bootStrap();
              Bootstrap.validate();
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 25edcb070a51d6c9d225ad3371c3933f301eb049..4cb67177f0b37a6f0253a2c961f87f417e1d3ccd 100644
+index 8f8b99e72c058100894162aebda202bcdbc3812c..7f5aa8f9cf6a32a7b2438d0d57b25f244e4db6b4 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -186,6 +186,7 @@ import org.bukkit.event.server.ServerLoadEvent;
+@@ -181,6 +181,7 @@ import org.bukkit.event.server.ServerLoadEvent;
  import co.aikar.timings.MinecraftTimings; // Paper
  import puregero.multipaper.MultiPaper;
  import puregero.multipaper.MultiPaperExternalBlocksHandler;
@@ -54,7 +54,7 @@ index 25edcb070a51d6c9d225ad3371c3933f301eb049..4cb67177f0b37a6f0253a2c961f87f41
  import puregero.multipaper.externalserverprotocol.DifficultyUpdatePacket;
  
  public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTask> implements CommandSource, AutoCloseable {
-@@ -1062,6 +1063,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1019,6 +1020,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          // Paper start - move final shutdown items here
          LOGGER.info("Flushing Chunk IO");
          com.destroystokyo.paper.io.PaperFileIOThread.Holder.INSTANCE.close(true, true); // Paper

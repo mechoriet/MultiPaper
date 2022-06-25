@@ -4,55 +4,8 @@ Date: Fri, 18 Mar 2022 01:43:33 +1000
 Subject: [PATCH] Add ability to pardon floodgate players
 
 
-diff --git a/src/main/java/net/minecraft/commands/synchronization/ArgumentTypes.java b/src/main/java/net/minecraft/commands/synchronization/ArgumentTypes.java
-index 9e0a39c447c34e9db96b465122a5a7f19ca682b0..73b510a26c3548dac04624fc04d8ae594dfee90e 100644
---- a/src/main/java/net/minecraft/commands/synchronization/ArgumentTypes.java
-+++ b/src/main/java/net/minecraft/commands/synchronization/ArgumentTypes.java
-@@ -60,6 +60,7 @@ import net.minecraft.gametest.framework.TestClassNameArgument;
- import net.minecraft.gametest.framework.TestFunctionArgument;
- import net.minecraft.network.FriendlyByteBuf;
- import net.minecraft.resources.ResourceLocation;
-+import net.minecraft.server.commands.PardonCommand;
- import org.slf4j.Logger;
- 
- public class ArgumentTypes {
-@@ -84,6 +85,7 @@ public class ArgumentTypes {
-         BrigadierArgumentSerializers.bootstrap();
-         register("entity", EntityArgument.class, new EntityArgument.Serializer());
-         register("game_profile", GameProfileArgument.class, new EmptyArgumentSerializer<>(GameProfileArgument::gameProfile));
-+        BY_CLASS.put(PardonCommand.BanListGameProfileArgument.class, BY_CLASS.get(GameProfileArgument.class)); // MultiPaper - Add our own GameProfileArgument implementation
-         register("block_pos", BlockPosArgument.class, new EmptyArgumentSerializer<>(BlockPosArgument::blockPos));
-         register("column_pos", ColumnPosArgument.class, new EmptyArgumentSerializer<>(ColumnPosArgument::columnPos));
-         register("vec3", Vec3Argument.class, new EmptyArgumentSerializer<>(Vec3Argument::vec3));
-@@ -130,7 +132,7 @@ public class ArgumentTypes {
-     }
- 
-     private static <T extends ArgumentType<?>> Class<T> fixClassType(Class<? super T> clazz) {
--        return clazz;
-+        return (Class<T>) clazz; // MultiPaper - fix decompile error
-     }
- 
-     @Nullable
-@@ -144,7 +146,7 @@ public class ArgumentTypes {
-     }
- 
-     public static <T extends ArgumentType<?>> void serialize(FriendlyByteBuf buf, T type) {
--        ArgumentTypes.Entry<T> entry = get(type);
-+        ArgumentTypes.Entry<T> entry = (Entry<T>) get(type); // MultiPaper - fix decompile error
-         if (entry == null) {
-             LOGGER.error("Could not serialize {} ({}) - will not be sent to client!", type, type.getClass());
-             buf.writeResourceLocation(new ResourceLocation(""));
-@@ -167,7 +169,7 @@ public class ArgumentTypes {
-     }
- 
-     private static <T extends ArgumentType<?>> void serializeToJson(JsonObject json, T type) {
--        ArgumentTypes.Entry<T> entry = get(type);
-+        ArgumentTypes.Entry<T> entry = (Entry<T>) get(type); // MultiPaper - fix decompile error
-         if (entry == null) {
-             LOGGER.error("Could not serialize argument {} ({})!", type, type.getClass());
-             json.addProperty("type", "unknown");
 diff --git a/src/main/java/net/minecraft/server/commands/PardonCommand.java b/src/main/java/net/minecraft/server/commands/PardonCommand.java
-index 77670471a5bbfceeba92fda95f2585616f626416..8579415159435e59d4faaacc47c66d0502ee7bd8 100644
+index f1605ec163f6d178df1b8203ff16fbe97cd53475..900d8b6b1b55b0e0f4ea833a0b3f6f4380133598 100644
 --- a/src/main/java/net/minecraft/server/commands/PardonCommand.java
 +++ b/src/main/java/net/minecraft/server/commands/PardonCommand.java
 @@ -2,16 +2,21 @@ package net.minecraft.server.commands;
@@ -69,14 +22,14 @@ index 77670471a5bbfceeba92fda95f2585616f626416..8579415159435e59d4faaacc47c66d05
  import net.minecraft.commands.Commands;
  import net.minecraft.commands.SharedSuggestionProvider;
  import net.minecraft.commands.arguments.GameProfileArgument;
+ import net.minecraft.network.chat.Component;
  import net.minecraft.network.chat.ComponentUtils;
- import net.minecraft.network.chat.TranslatableComponent;
 +import net.minecraft.server.MinecraftServer;
  import net.minecraft.server.players.UserBanList;
 +import net.minecraft.server.players.UserBanListEntry;
  
  public class PardonCommand {
-     private static final SimpleCommandExceptionType ERROR_NOT_BANNED = new SimpleCommandExceptionType(new TranslatableComponent("commands.pardon.failed"));
+     private static final SimpleCommandExceptionType ERROR_NOT_BANNED = new SimpleCommandExceptionType(Component.translatable("commands.pardon.failed"));
 @@ -19,13 +24,38 @@ public class PardonCommand {
      public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
          dispatcher.register(Commands.literal("pardon").requires((source) -> {

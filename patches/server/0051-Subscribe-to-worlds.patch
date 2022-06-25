@@ -5,10 +5,10 @@ Subject: [PATCH] Subscribe to worlds
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 52261d931b404d7ab89088f7dac111b209663fb2..214eb4b7d1acf24a8e449804006a3d8e5a8b4a0c 100644
+index 0c8028c1580e34ab9b031deb3fc28bea54dc6cdf..0e063e7f0a432496de8319138a0858fa9541d6eb 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -244,6 +244,8 @@ import org.yaml.snakeyaml.constructor.SafeConstructor;
+@@ -240,6 +240,8 @@ import org.yaml.snakeyaml.constructor.SafeConstructor;
  import org.yaml.snakeyaml.error.MarkedYAMLException;
  
  import net.md_5.bungee.api.chat.BaseComponent; // Spigot
@@ -17,7 +17,7 @@ index 52261d931b404d7ab89088f7dac111b209663fb2..214eb4b7d1acf24a8e449804006a3d8e
  import puregero.multipaper.permissions.MultiPaperPermissions;
  
  import javax.annotation.Nullable; // Paper
-@@ -1364,6 +1366,7 @@ public final class CraftServer implements Server {
+@@ -1346,6 +1348,7 @@ public final class CraftServer implements Server {
              return;
          }
          this.worlds.put(world.getName().toLowerCase(java.util.Locale.ENGLISH), world);

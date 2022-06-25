@@ -5,10 +5,10 @@ Subject: [PATCH] Sync experience
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index c2f0b70b72b536a8a02a6d4f270b2c1c46eb52d1..1de8b2c75eb9344694821b2712806da5fc5da20b 100644
+index a0eb7d63af2f9d4adff3ebb38961a7270e2d2456..c7da9dd7e1cd5db53bfd51b81e473a67a244e14d 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -160,10 +160,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
+@@ -169,10 +169,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
  import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
  import org.bukkit.inventory.MainHand;
  import puregero.multipaper.*;
@@ -20,7 +20,7 @@ index c2f0b70b72b536a8a02a6d4f270b2c1c46eb52d1..1de8b2c75eb9344694821b2712806da5
  // CraftBukkit end
  
  public class ServerPlayer extends Player {
-@@ -586,6 +583,20 @@ public class ServerPlayer extends Player {
+@@ -595,6 +592,20 @@ public class ServerPlayer extends Player {
          this.lastSentExp = -1;
      }
  
@@ -42,7 +42,7 @@ index c2f0b70b72b536a8a02a6d4f270b2c1c46eb52d1..1de8b2c75eb9344694821b2712806da5
          screenHandler.addSlotListener(this.containerListener);
          screenHandler.setSynchronizer(this.containerSynchronizer);
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index efa369431403c4c86f740cee75e5a41a8e0b6230..92ebdedae7601cc6d324d606cbc961da2303e71d 100644
+index 40cefc8f4488bfb989c6f1c130b16629ddce8d4d..224831be732bb485738bcbde6d9f05924f8ed6bc 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
 @@ -95,6 +95,8 @@ public class MultiPaper {

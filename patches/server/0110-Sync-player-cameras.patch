@@ -5,10 +5,10 @@ Subject: [PATCH] Sync player cameras
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 1de8b2c75eb9344694821b2712806da5fc5da20b..e4fde856060cc3b877abd426b5a5b45bec33066e 100644
+index c7da9dd7e1cd5db53bfd51b81e473a67a244e14d..a3c942456a404ec0b497ceab7b86504c00af42b2 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -2060,6 +2060,8 @@ public class ServerPlayer extends Player {
+@@ -2094,6 +2094,8 @@ public class ServerPlayer extends Player {
          }
          this.connection.send(new ClientboundSetCameraPacket(entity));
          // Paper end

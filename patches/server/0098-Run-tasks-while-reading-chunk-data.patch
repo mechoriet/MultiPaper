@@ -5,20 +5,20 @@ Subject: [PATCH] Run tasks while reading chunk data
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index d51db477662e176ec357f8410b51db73d710e7df..5ee9b5e42c171b953557dce6d650b49b82206321 100644
+index 41b0d0f65949ee9b671e0c667c4fc027e31e3782..92a978ca9b0dc8589767d519f76d92627dc92e95 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
-@@ -2,6 +2,7 @@ package net.minecraft.server.level;
+@@ -1,6 +1,7 @@
+ package net.minecraft.server.level;
  
  import co.aikar.timings.Timing; // Paper
- import com.destroystokyo.paper.PaperWorldConfig; // Paper
 +import com.destroystokyo.paper.io.PaperFileIOThread;
  import com.google.common.collect.ImmutableList;
  import com.google.common.collect.ImmutableList.Builder;
  import com.google.common.collect.Iterables;
-@@ -1691,9 +1692,17 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1722,9 +1723,17 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
      @Override
-     public CompoundTag read(ChunkPos chunkcoordintpair) throws IOException {
+     public CompoundTag readSync(ChunkPos chunkcoordintpair) throws IOException {
          if (Thread.currentThread() != com.destroystokyo.paper.io.PaperFileIOThread.Holder.INSTANCE) {
 -            CompoundTag ret = com.destroystokyo.paper.io.PaperFileIOThread.Holder.INSTANCE
 -                .loadChunkDataAsyncFuture(this.level, chunkcoordintpair.x, chunkcoordintpair.z, com.destroystokyo.paper.io.IOUtil.getPriorityForCurrentThread(),

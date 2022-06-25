@@ -5,7 +5,7 @@ Subject: [PATCH] A view distance of 1 also works
 
 
 diff --git a/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java b/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
-index 80e503ee79e352f723e0494e92f62c781d6db34a..30ee7422b538f73e0b7ce3dccb2c8cc32f36d376 100644
+index 3eff1a562ad1bfa866a09d1e0464bb82e9cb36fe..fbf9596bfd9aa5a0206923da20f8dbb8b69d8f2d 100644
 --- a/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
 +++ b/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
 @@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;

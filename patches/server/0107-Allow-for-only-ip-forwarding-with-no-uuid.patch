@@ -5,10 +5,10 @@ Subject: [PATCH] Allow for only ip forwarding with no uuid
 
 
 diff --git a/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
-index 2000498bd5da40d2440273a820f7dd8d04e9a327..a5cffe1938c1976a437cd033afb26949cfa3e165 100644
+index 828f10d34a74e42043fd16c81e4834e860071c0d..c18713bb166afd7c8e68593884c9416fd1e1ad01 100644
 --- a/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
-@@ -134,12 +134,13 @@ public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketL
+@@ -133,12 +133,13 @@ public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketL
                      if (!handledByEvent && proxyLogicEnabled) {
                          // Paper end
                      // if (org.spigotmc.SpigotConfig.bungee) { // Paper - comment out, we check above!
@@ -23,12 +23,12 @@ index 2000498bd5da40d2440273a820f7dd8d04e9a327..a5cffe1938c1976a437cd033afb26949
                              connection.spoofedUUID = com.mojang.util.UUIDTypeAdapter.fromString( split[2] );
                          } else
                          {
-@@ -152,7 +153,7 @@ public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketL
+@@ -151,7 +152,7 @@ public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketL
                          {
                              connection.spoofedProfile = ServerHandshakePacketListenerImpl.gson.fromJson(split[3], com.mojang.authlib.properties.Property[].class);
                          }
 -                    } else if ( ( split.length == 3 || split.length == 4 ) && ( ServerHandshakePacketListenerImpl.HOST_PATTERN.matcher( split[1] ).matches() ) ) {
 +                    } else if ( ( split.length == 2 || split.length == 3 || split.length == 4 ) && ( ServerHandshakePacketListenerImpl.HOST_PATTERN.matcher( split[1] ).matches() ) ) { // MultiPaper - Allow for only ip-forwarding
-                         TranslatableComponent chatmessage = new TranslatableComponent("Unknown data in login hostname, did you forget to enable BungeeCord in spigot.yml?");
+                         Component chatmessage = Component.literal("Unknown data in login hostname, did you forget to enable BungeeCord in spigot.yml?");
                          this.connection.send(new ClientboundLoginDisconnectPacket(chatmessage));
                          this.connection.disconnect(chatmessage);

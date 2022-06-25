@@ -5,7 +5,7 @@ Subject: [PATCH] Sync gamerules
 
 
 diff --git a/src/main/java/net/minecraft/world/level/GameRules.java b/src/main/java/net/minecraft/world/level/GameRules.java
-index 859477e1d87423fa73f6a75df5f8fdced9b4dfc4..89e6c79ff0a17933fef40d7058428a11ad2e1aa9 100644
+index bd825b947e4aee912af78ac966ae76865785d363..f32294af417cda17545d6daf777aaec7990c44b5 100644
 --- a/src/main/java/net/minecraft/world/level/GameRules.java
 +++ b/src/main/java/net/minecraft/world/level/GameRules.java
 @@ -27,6 +27,7 @@ import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
@@ -16,7 +16,7 @@ index 859477e1d87423fa73f6a75df5f8fdced9b4dfc4..89e6c79ff0a17933fef40d7058428a11
  
  public class GameRules {
  
-@@ -346,6 +347,7 @@ public class GameRules {
+@@ -347,6 +348,7 @@ public class GameRules {
          protected void updateFromArgument(CommandContext<CommandSourceStack> context, String name, GameRules.Key<BooleanValue> gameRuleKey) { // Paper start
              io.papermc.paper.event.world.WorldGameRuleChangeEvent event = new io.papermc.paper.event.world.WorldGameRuleChangeEvent(context.getSource().getBukkitWorld(), context.getSource().getBukkitSender(), (org.bukkit.GameRule<Boolean>) org.bukkit.GameRule.getByName(gameRuleKey.toString()), String.valueOf(BoolArgumentType.getBool(context, name)));
              if (!event.callEvent()) return;
@@ -24,7 +24,7 @@ index 859477e1d87423fa73f6a75df5f8fdced9b4dfc4..89e6c79ff0a17933fef40d7058428a11
              this.value = Boolean.parseBoolean(event.getValue());
              // Paper end
          }
-@@ -414,6 +416,7 @@ public class GameRules {
+@@ -415,6 +417,7 @@ public class GameRules {
          protected void updateFromArgument(CommandContext<CommandSourceStack> context, String name, GameRules.Key<IntegerValue> gameRuleKey) { // Paper start
              io.papermc.paper.event.world.WorldGameRuleChangeEvent event = new io.papermc.paper.event.world.WorldGameRuleChangeEvent(context.getSource().getBukkitWorld(), context.getSource().getBukkitSender(), (org.bukkit.GameRule<Integer>) org.bukkit.GameRule.getByName(gameRuleKey.toString()), String.valueOf(IntegerArgumentType.getInteger(context, name)));
              if (!event.callEvent()) return;
@@ -33,7 +33,7 @@ index 859477e1d87423fa73f6a75df5f8fdced9b4dfc4..89e6c79ff0a17933fef40d7058428a11
              // Paper end
          }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 4234e6f7f7337cca80d5c1abbdc2ef398cd25ad5..3c1ddc42cba01135e869e3c8bf18fd6e7c3ecd79 100644
+index 1859489d657421f5b02cd3c799277469c77cd724..67887ae35ef8e1797fa491ba9db334f10a79ebc3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -130,6 +130,7 @@ import org.bukkit.util.Consumer;
@@ -44,7 +44,7 @@ index 4234e6f7f7337cca80d5c1abbdc2ef398cd25ad5..3c1ddc42cba01135e869e3c8bf18fd6e
  import puregero.multipaper.externalserverprotocol.TimeUpdatePacket;
  
  public class CraftWorld extends CraftRegionAccessor implements World {
-@@ -1929,6 +1930,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -1928,6 +1929,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
          GameRule<?> gameRule = GameRule.getByName(rule);
          io.papermc.paper.event.world.WorldGameRuleChangeEvent event = new io.papermc.paper.event.world.WorldGameRuleChangeEvent(this, null, gameRule, value);
          if (!event.callEvent()) return false;
@@ -52,7 +52,7 @@ index 4234e6f7f7337cca80d5c1abbdc2ef398cd25ad5..3c1ddc42cba01135e869e3c8bf18fd6e
          // Paper end
          GameRules.Value<?> handle = this.getHandle().getGameRules().getRule(CraftWorld.getGameRulesNMS().get(rule));
          handle.deserialize(event.getValue()); // Paper
-@@ -1969,6 +1971,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -1968,6 +1970,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
          // Paper start
          io.papermc.paper.event.world.WorldGameRuleChangeEvent event = new io.papermc.paper.event.world.WorldGameRuleChangeEvent(this, null, rule, String.valueOf(newValue));
          if (!event.callEvent()) return false;

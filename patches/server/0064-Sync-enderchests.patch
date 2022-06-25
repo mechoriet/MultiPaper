@@ -5,10 +5,10 @@ Subject: [PATCH] Sync enderchests
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 491734885d2a722fb8b3a081d04225426890397a..b50a576c77adf30a6dcb004e340706062e0a519d 100644
+index 7d520326b73959a55be016844f0373880c0b8e43..c859ed395f7c92c9b3bfb65882bcc1fa8e089c3d 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -331,6 +331,7 @@ public class ServerPlayer extends Player {
+@@ -340,6 +340,7 @@ public class ServerPlayer extends Player {
          this.bukkitPickUpLoot = true;
          this.maxHealthCache = this.getMaxHealth();
          this.cachedSingleMobDistanceMap = new com.destroystokyo.paper.util.PooledHashSets.PooledObjectLinkedOpenHashSet<>(this); // Paper

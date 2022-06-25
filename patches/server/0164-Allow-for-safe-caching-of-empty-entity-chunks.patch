@@ -7,7 +7,7 @@ This allows MultiPaper to not have to write empty entity chunks
 when they are already empty on the disk.
 
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/EntityStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/EntityStorage.java
-index ef3d23bc931a809f2f85d2eab079a8203893b0ab..d2a80abbd40baa0da78828aa8b86b505387513a6 100644
+index 55fc4ba575578a3bb642255073733c964d61d78e..7b582a0b2d0e40f57039e975a0c8e72b9ac675e0 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/EntityStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/EntityStorage.java
 @@ -31,7 +31,7 @@ public class EntityStorage implements EntityPersistentStorage<Entity> {
@@ -21,15 +21,15 @@ index ef3d23bc931a809f2f85d2eab079a8203893b0ab..d2a80abbd40baa0da78828aa8b86b505
      private final Set<CompletableFuture<CompoundTag>> loadingTasksInProgress = ConcurrentHashMap.newKeySet(); // MultiPaper
 @@ -77,7 +77,7 @@ public class EntityStorage implements EntityPersistentStorage<Entity> {
      public CompletableFuture<ChunkEntities<Entity>> loadEntities(ChunkPos pos) {
-         return this.emptyChunks.contains(pos.toLong()) ? CompletableFuture.completedFuture(emptyChunk(pos)) : loadAsync(pos).thenApplyAsync((compound) -> { // MultiPaper - replace this.worker.loadAsync(pos) with async chunk loading
-             if (compound == null) {
+         return this.emptyChunks.contains(pos.toLong()) ? CompletableFuture.completedFuture(emptyChunk(pos)) : loadAsync(pos).thenApplyAsync((nbt) -> { // MultiPaper - replace this.worker.loadAsync(pos) with async chunk loading
+             if (nbt == null || nbt.size() == 0) {
 -                // this.emptyChunks.add(pos.toLong()); // MultiPaper - don't cache empty chunks
 +                this.emptyChunks.add(pos.toLong()); // MultiPaper - don't cache empty chunks // MultiPaper - allow for safe caching of empty entity chunks
                  return emptyChunk(pos);
              } else {
                  try {
 @@ -92,6 +92,7 @@ public class EntityStorage implements EntityPersistentStorage<Entity> {
-                 CompoundTag compoundTag = this.upgradeChunkTag(compound);
+                 CompoundTag compoundTag = this.upgradeChunkTag(nbt);
                  ListTag listTag = compoundTag.getList("Entities", 10);
                  List<Entity> list = EntityType.loadEntitiesRecursive(listTag, this.level).collect(ImmutableList.toImmutableList());
 +                if (list.isEmpty()) this.emptyChunks.add(pos.toLong()); // MultiPaper - allow for safe caching of empty entity chunks
@@ -58,7 +58,7 @@ index ef3d23bc931a809f2f85d2eab079a8203893b0ab..d2a80abbd40baa0da78828aa8b86b505
              ListTag listTag = new ListTag();
              final java.util.Map<net.minecraft.world.entity.EntityType<?>, Integer> savedEntityCounts = new java.util.HashMap<>(); // Paper
 diff --git a/src/main/java/net/minecraft/world/level/entity/PersistentEntitySectionManager.java b/src/main/java/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
-index 42370672b5297e7360f45c0fc167c110b5a8f1a0..193afb97af029c5863d02387f4d8fc6c3cf29b80 100644
+index 7876160df5ad3ad79d99f39234f15a133820cd33..18c568e16f6d5555b584708edb437cf40434f594 100644
 --- a/src/main/java/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
 +++ b/src/main/java/net/minecraft/world/level/entity/PersistentEntitySectionManager.java
 @@ -316,7 +316,7 @@ public class PersistentEntitySectionManager<T extends EntityAccess> implements A

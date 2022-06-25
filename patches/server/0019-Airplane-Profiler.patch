@@ -20,10 +20,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 5613e504b46e573d6228413a6064a0541c68ac04..e833885b0962d388f895405d08d7bc2937d2d077 100644
+index 50fb3c551fa58e5fa1d55d218b6449b897d239ee..5ad21cbea260906ca1c0bad16a7398cf8cc9a910 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -54,6 +54,7 @@ dependencies {
+@@ -56,6 +56,7 @@ dependencies {
      implementation ("me.carleslc.Simple-YAML:Simple-Yaml:1.7.2") { // Airplane - more config
          exclude(group="org.yaml", module="snakeyaml") // exclude snakeyaml dependency because its old (1.26)
      } // Airplane - more config
@@ -871,7 +871,7 @@ index 909b2c98e7a9117d2f737245e4661792ffafb744..9da898c6f44832b4421b8c2745e3121b
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/ServerShutdownThread.java b/src/main/java/org/bukkit/craftbukkit/util/ServerShutdownThread.java
-index d752720f2f234b9dbd2117333fee1bfad663ec02..9868b3a9a35cea9689c76ea9b62f2732ab61c94c 100644
+index e948ec5a573b22645664eb53bc3e9932246544e4..50322808008b182d6fb933c1f0d18ee35f30132a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/ServerShutdownThread.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/ServerShutdownThread.java
 @@ -11,6 +11,7 @@ public class ServerShutdownThread extends Thread {

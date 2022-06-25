@@ -5,10 +5,10 @@ Subject: [PATCH] Strip raytracing for EntityLiving#hasLineOfSight
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 1521f53ee1bd85ca44a68b2c9d969eaf63fa342e..f6580027c8e53f12af219ebd01f2e118c6ed9ef6 100644
+index 279051442ac6cf288a03a16a35ddbf66d1cd1e90..3d0fa194bde652533fc806a5492bca87c8abb2e1 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -3548,7 +3548,10 @@ public abstract class LivingEntity extends Entity {
+@@ -3580,7 +3580,10 @@ public abstract class LivingEntity extends Entity {
              Vec3 vec3d1 = new Vec3(entity.getX(), entity.getEyeY(), entity.getZ());
  
              // Paper - diff on change - used in CraftLivingEntity#hasLineOfSight(Location) and CraftWorld#lineOfSightExists
@@ -42,10 +42,10 @@ index d1eefa6ef3e9abfe7af4d8310aa64465fa2d5463..451f8149a17fc050153e74e7f09e8889
      default BlockHitResult clip(ClipContext raytrace1, BlockPos blockposition) {
              // Paper start - Prevent raytrace from loading chunks
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 160c0f37aa3aaf7598f852acf9bd444f79444c97..fdb02b92ac7840f0c2657173f54f0ca7e3f13eb5 100644
+index d59dea221ba0f1b9c14f403d3c6ea61b2c454316..b8abe4761471138aba67987572d55abe6561aac1 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -394,6 +394,91 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -410,6 +410,91 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
          return null;
      }
  

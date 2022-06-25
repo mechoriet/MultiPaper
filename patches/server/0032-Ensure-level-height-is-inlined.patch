@@ -5,10 +5,10 @@ Subject: [PATCH] Ensure level height is inlined
 
 
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index cc0757214bad997b04bfcd9ea0efc683f0a70344..ab267a7bca7d848b359a8886b7dfb193de3f2a31 100644
+index 8bca0ac5115e1fc60845490e55a1a0f7c0b53323..3fcb714f0aa0ee83d557cea86750b197d3576a70 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -261,6 +261,15 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -272,6 +272,15 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
  
      public abstract ResourceKey<LevelStem> getTypeKey();
  
@@ -21,20 +21,20 @@ index cc0757214bad997b04bfcd9ea0efc683f0a70344..ab267a7bca7d848b359a8886b7dfb193
 +    @Override public final int getHeight() { return this.height; }
 +    // Airplane end
 +
-     protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.concurrent.Executor executor) { // Paper - Async-Anti-Xray - Pass executor
+     protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.concurrent.Executor executor) { // Paper - Async-Anti-Xray - Pass executor
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
-         this.paperConfig = new com.destroystokyo.paper.PaperWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName(), this.spigotConfig); // Paper
-@@ -279,6 +288,13 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+         this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper
+@@ -289,6 +298,13 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+         this.profiler = supplier;
          this.levelData = worlddatamutable;
          this.dimensionTypeRegistration = holder;
-         this.dimensionType = (DimensionType) holder.value();
 +        // Airplane start
-+        this.minBuildHeight = dimensionType.minY();
++        this.minBuildHeight = dimensionTypeRegistration.value().minY();
 +        this.minSection = SectionPos.blockToSectionCoord(this.minBuildHeight);
-+        this.height = dimensionType.height();
++        this.height = dimensionTypeRegistration.value().height();
 +        this.maxBuildHeight = this.minBuildHeight + this.height;
 +        this.maxSection = SectionPos.blockToSectionCoord(this.maxBuildHeight - 1) + 1;
 +        // Airplane end
-         this.dimension = resourcekey;
-         this.isClientSide = flag;
-         if (this.dimensionType.coordinateScale() != 1.0D) {
+         this.dimensionTypeId = (ResourceKey) holder.unwrapKey().orElseThrow(() -> {
+             return new IllegalArgumentException("Dimension must be registered, got " + holder);
+         });

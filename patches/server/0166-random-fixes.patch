@@ -1,0 +1,83 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: mechoriet <kevinworm92@gmail.com>
+Date: Sat, 25 Jun 2022 00:39:10 +0200
+Subject: [PATCH] random fixes
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 61f777c26f6e9ab9fead8d93a9b6d15ed02ba350..8241a1515aaa488d645e52b8a61b8d2d34e37b27 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -11,7 +11,9 @@ plugins {
+ dependencies {
+     implementation(project(":MultiPaper-MasterMessagingProtocol")) // MultiPaper
+     implementation(project(":MultiPaper-API")) // MultiPaper // Airplane // Paper
+-    implementation("io.papermc.paper:paper-mojangapi:1.18-R0.1-SNAPSHOT") // Airplane
++   implementation("io.papermc.paper:paper-mojangapi:1.19-R0.1-SNAPSHOT") {
++       exclude("io.papermc.paper", "paper-api")
++   }
+     // Paper start
+     implementation("org.jline:jline-terminal-jansi:3.21.0")
+     implementation("net.minecrell:terminalconsoleappender:1.3.0")
+diff --git a/src/main/java/net/minecraft/commands/synchronization/ArgumentTypeInfos.java b/src/main/java/net/minecraft/commands/synchronization/ArgumentTypeInfos.java
+index f7c856535cc6a1f010d82f0a0b31a34978854310..0ddad8fbc2992bfd0a155ba9399bd643ac260b29 100644
+--- a/src/main/java/net/minecraft/commands/synchronization/ArgumentTypeInfos.java
++++ b/src/main/java/net/minecraft/commands/synchronization/ArgumentTypeInfos.java
+@@ -59,6 +59,7 @@ import net.minecraft.commands.synchronization.brigadier.StringArgumentSerializer
+ import net.minecraft.core.Registry;
+ import net.minecraft.gametest.framework.TestClassNameArgument;
+ import net.minecraft.gametest.framework.TestFunctionArgument;
++import net.minecraft.server.commands.PardonCommand;
+ 
+ public class ArgumentTypeInfos {
+     private static final Map<Class<?>, ArgumentTypeInfo<?, ?>> BY_CLASS = Maps.newHashMap();
+@@ -77,6 +78,7 @@ public class ArgumentTypeInfos {
+         register(registry, "brigadier:string", StringArgumentType.class, new StringArgumentSerializer());
+         register(registry, "entity", EntityArgument.class, new EntityArgument.Info());
+         register(registry, "game_profile", GameProfileArgument.class, SingletonArgumentInfo.contextFree(GameProfileArgument::gameProfile));
++        BY_CLASS.put(PardonCommand.BanListGameProfileArgument.class, BY_CLASS.get(GameProfileArgument.class)); // MultiPaper - Add our own GameProfileArgument implementation
+         register(registry, "block_pos", BlockPosArgument.class, SingletonArgumentInfo.contextFree(BlockPosArgument::blockPos));
+         register(registry, "column_pos", ColumnPosArgument.class, SingletonArgumentInfo.contextFree(ColumnPosArgument::columnPos));
+         register(registry, "vec3", Vec3Argument.class, SingletonArgumentInfo.contextFree(Vec3Argument::vec3));
+@@ -112,8 +114,8 @@ public class ArgumentTypeInfos {
+         register(registry, "entity_summon", EntitySummonArgument.class, SingletonArgumentInfo.contextFree(EntitySummonArgument::id));
+         register(registry, "dimension", DimensionArgument.class, SingletonArgumentInfo.contextFree(DimensionArgument::dimension));
+         register(registry, "time", TimeArgument.class, SingletonArgumentInfo.contextFree(TimeArgument::time));
+-        register(registry, "resource_or_tag", fixClassType(ResourceOrTagLocationArgument.class), new ResourceOrTagLocationArgument.Info());
+-        register(registry, "resource", fixClassType(ResourceKeyArgument.class), new ResourceKeyArgument.Info());
++        register(registry, "resource_or_tag", fixClassType(ResourceOrTagLocationArgument.class), new ResourceOrTagLocationArgument.Info<>());
++        register(registry, "resource", fixClassType(ResourceKeyArgument.class), new ResourceKeyArgument.Info<>());
+         register(registry, "template_mirror", TemplateMirrorArgument.class, SingletonArgumentInfo.contextFree(TemplateMirrorArgument::templateMirror));
+         register(registry, "template_rotation", TemplateRotationArgument.class, SingletonArgumentInfo.contextFree(TemplateRotationArgument::templateRotation));
+         if (SharedConstants.IS_RUNNING_IN_IDE) {
+@@ -125,7 +127,7 @@ public class ArgumentTypeInfos {
+     }
+ 
+     private static <T extends ArgumentType<?>> Class<T> fixClassType(Class<? super T> clazz) {
+-        return clazz;
++        return (Class<T>) clazz; // MultiPaper - fix decompile error
+     }
+ 
+     public static boolean isClassRecognized(Class<?> clazz) {
+@@ -137,7 +139,7 @@ public class ArgumentTypeInfos {
+         if (argumentTypeInfo == null) {
+             throw new IllegalArgumentException("Unrecognized argument type %s (%s)".formatted(argumentType, argumentType.getClass()));
+         } else {
+-            return argumentTypeInfo;
++            return (ArgumentTypeInfo<A, ?>) argumentTypeInfo;
+         }
+     }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 78aadda02a79c88fcd8a82cd3b9e5a0624aad6b2..341e9e03b8981133ea860b82ba96076753b3f810 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1318,7 +1318,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+ 
+     @Override
+     public void chatOnOtherServers(@NotNull String msg) {
+-        MultiPaper.broadcastPacketToExternalServers(getHandle(), new PlayerActionPacket(getHandle(), new ServerboundChatPacket(msg)));
++        MultiPaper.broadcastPacketToExternalServers(getHandle(), new PlayerActionPacket(getHandle(), new ServerboundChatPacket(msg,null,true)));
+     }
+ 
+     @Override

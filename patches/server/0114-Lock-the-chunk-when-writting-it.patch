@@ -5,10 +5,10 @@ Subject: [PATCH] Lock the chunk when writting it
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 5ee9b5e42c171b953557dce6d650b49b82206321..4791c02db09f9d4923f6e22a11f17334050a6172 100644
+index 92a978ca9b0dc8589767d519f76d92627dc92e95..805006d490ec377390b39c00468ed558b132f7d4 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
-@@ -1513,6 +1513,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1544,6 +1544,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
              asyncSaveData = ChunkSerializer.getAsyncSaveData(this.level, chunk);
          }
  
@@ -17,7 +17,7 @@ index 5ee9b5e42c171b953557dce6d650b49b82206321..4791c02db09f9d4923f6e22a11f17334
              asyncSaveData, chunk);
  
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index 62b9491211f6aa234782ea588b792cf9df48af3c..5a1bafa92b45fe4740938cbf14c36c960c982502 100644
+index 6cfe1c005edf176b2194891b8d813b99d20b3fe9..dbc0ed2a8d91c266cb13decd5cef20307cd04f5c 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
 @@ -515,6 +515,10 @@ public class MultiPaper {

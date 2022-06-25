@@ -5,12 +5,12 @@ Subject: [PATCH] Pufferfish Config and Command
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index e1b4817dd48ffb9991075dd487abc43b8736ac4d..7d5fe2c89e066c5a98566a7b00a1052b9a9553ea 100644
+index 02d35358ba6aa1abfb44871fa725e2c57ca00dbc..2420e733bb98b07ae2615d7facc571974427ac52 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -42,6 +42,13 @@ dependencies {
-     }
-     // Paper end
+@@ -44,6 +44,13 @@ dependencies {
+     runtimeOnly("org.apache.maven.resolver:maven-resolver-connector-basic:1.7.3")
+     runtimeOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.7.3")
  
 +    // Pufferfish start
 +    implementation("org.yaml:snakeyaml:1.28")
@@ -252,11 +252,11 @@ index 0000000000000000000000000000000000000000..3e76b02eb4a4aa2d432bef78b7ec70b7
 +	
 +}
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 257c94f7c1cb00c9a91ab82e311dfd8eca29c538..f723445ac4745742ffe528d189b0145120777d9e 100644
+index aea18838a17fc52e1bf8cd84cd185565e6e2246d..0ea9364fdda05a9611b230ad039673ac90925db2 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -235,6 +235,8 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
-         io.papermc.paper.util.ObfHelper.INSTANCE.getClass(); // load mappings for stacktrace deobf and etc.
+@@ -226,6 +226,8 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // load version history now
          io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider
          // Paper end
 +        gg.pufferfish.pufferfish.PufferfishConfig.load(); // Pufferfish

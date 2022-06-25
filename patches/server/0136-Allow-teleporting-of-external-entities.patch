@@ -5,10 +5,10 @@ Subject: [PATCH] Allow teleporting of external entities
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 4791c02db09f9d4923f6e22a11f17334050a6172..02e8bd3c8e8379ad882245cc2d79d2ed8e64eabb 100644
+index 805006d490ec377390b39c00468ed558b132f7d4..ce516639a60c6f948d765fc26218bf629e569246 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
-@@ -2249,7 +2249,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -2297,7 +2297,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
  
      public class TrackedEntity {
  
@@ -18,10 +18,10 @@ index 4791c02db09f9d4923f6e22a11f17334050a6172..02e8bd3c8e8379ad882245cc2d79d2ed
          private final int range;
          SectionPos lastSectionPos;
 diff --git a/src/main/java/net/minecraft/server/level/ServerEntity.java b/src/main/java/net/minecraft/server/level/ServerEntity.java
-index d6dd3b9e2735cba7a45b7748d8d4fc6c766f3ede..5da6ddd76b0df6132fbc73e9358182310404d7ac 100644
+index 2cb435809d6b748e323a2eefa8e7aa9641cc080b..fa3c2e784036407d07913c892bc0a932c525ebea 100644
 --- a/src/main/java/net/minecraft/server/level/ServerEntity.java
 +++ b/src/main/java/net/minecraft/server/level/ServerEntity.java
-@@ -64,7 +64,7 @@ public class ServerEntity {
+@@ -62,7 +62,7 @@ public class ServerEntity {
      private int yHeadRotp;
      private Vec3 ap;
      private int tickCount;
@@ -31,10 +31,10 @@ index d6dd3b9e2735cba7a45b7748d8d4fc6c766f3ede..5da6ddd76b0df6132fbc73e935818231
      private boolean wasRiding;
      private boolean wasOnGround;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index 243a1f4ac9515a7b82ddd2c3b1df36cba942f752..46e6713c605f8dbb50c0f0bad734833ea65bb6f9 100644
+index 61c39c1878acca222cba4a0719ceab32cf87960c..b7745b77377630a4860ec178d6f79a5807e25ece 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-@@ -154,6 +154,7 @@ import net.minecraft.world.entity.vehicle.MinecartFurnace;
+@@ -158,6 +158,7 @@ import net.minecraft.world.entity.vehicle.MinecartFurnace;
  import net.minecraft.world.entity.vehicle.MinecartHopper;
  import net.minecraft.world.entity.vehicle.MinecartSpawner;
  import net.minecraft.world.entity.vehicle.MinecartTNT;
@@ -42,7 +42,7 @@ index 243a1f4ac9515a7b82ddd2c3b1df36cba942f752..46e6713c605f8dbb50c0f0bad734833e
  import net.minecraft.world.phys.AABB;
  import org.bukkit.EntityEffect;
  import org.bukkit.Location;
-@@ -184,6 +185,7 @@ import org.bukkit.util.BoundingBox;
+@@ -188,6 +189,7 @@ import org.bukkit.util.BoundingBox;
  import org.bukkit.util.NumberConversions;
  import org.bukkit.util.Vector;
  import puregero.multipaper.MultiPaper;
@@ -50,7 +50,7 @@ index 243a1f4ac9515a7b82ddd2c3b1df36cba942f752..46e6713c605f8dbb50c0f0bad734833e
  
  public abstract class CraftEntity implements org.bukkit.entity.Entity {
      private static PermissibleBase perm;
-@@ -580,6 +582,12 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -591,6 +593,12 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
          }
  
          // entity.setLocation() throws no event, and so cannot be cancelled
@@ -60,7 +60,7 @@ index 243a1f4ac9515a7b82ddd2c3b1df36cba942f752..46e6713c605f8dbb50c0f0bad734833e
 +            chunk.externalOwner.getConnection().send(new EntityTeleportPacket(entity, location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch()));
 +        }
 +        // MultiPaper end
-         entity.moveTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch()); // Paper - use proper setPosition, as per vanilla teleporting
+         entity.moveTo(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch()); // Paper - use proper moveTo, as per vanilla teleporting
          // SPIGOT-619: Force sync head rotation also
          this.entity.setYHeadRot(location.getYaw());
 diff --git a/src/main/java/puregero/multipaper/externalserverprotocol/EntityTeleportPacket.java b/src/main/java/puregero/multipaper/externalserverprotocol/EntityTeleportPacket.java

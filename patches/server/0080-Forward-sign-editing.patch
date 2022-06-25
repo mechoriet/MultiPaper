@@ -5,18 +5,17 @@ Subject: [PATCH] Forward sign editing
 
 
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 25dc4bca5645e8f8db820c8e9373a89fad537c8f..2378b355728e5e7ae95e651ac81957226a04c7dc 100644
+index c87edab0deb9d1f6aaeba2f9f186ba0a0b5663eb..f8d13e7bf00f2398666158efdcd41ac6ae74e55d 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -3081,6 +3081,8 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -3264,6 +3264,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
  
      @Override
      public void handleSignUpdate(ServerboundSignUpdatePacket packet) {
-+        if (MultipaperSignHandler.handleSignUpdate(this.player, packet)) return;
-+
-         List<String> list = (List) Stream.of(packet.getLines()).map(ChatFormatting::stripFormatting).collect(Collectors.toList());
- 
-         this.filterTextPacket(list, (list1) -> {
++        if (MultipaperSignHandler.handleSignUpdate(this.player, packet)) return; // MultiPaper
+         // Paper start - cap line length - modified clients can send longer data than normal
+         String[] lines = packet.getLines();
+         for (int i = 0; i < lines.length; ++i) {
 diff --git a/src/main/java/puregero/multipaper/MultipaperSignHandler.java b/src/main/java/puregero/multipaper/MultipaperSignHandler.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..4520f03cc32ee2eedf47c5e575d64f161fe9daf6

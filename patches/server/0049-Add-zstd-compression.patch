@@ -5,17 +5,17 @@ Subject: [PATCH] Add zstd compression
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index c45c76262b2bd058f179d7cff845562b3f02a520..e24dbe4c5f60f957dc7859c2bb1ba6a202761c19 100644
+index f4c50397dfdd9614b160df59794aa81452146077..9a90773511c414ca7d3fd485b45d972a7423ac9f 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -35,6 +35,7 @@ dependencies {
-     runtimeOnly("org.apache.maven:maven-resolver-provider:3.8.4")
-     runtimeOnly("org.apache.maven.resolver:maven-resolver-connector-basic:1.7.2")
-     runtimeOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.7.2")
+@@ -31,6 +31,7 @@ dependencies {
+     implementation("org.ow2.asm:asm-commons:9.3") // Paper - ASM event executor generation
+     implementation("org.spongepowered:configurate-yaml:4.1.2") // Paper - config files
+     implementation("commons-lang:commons-lang:2.6")
 +    implementation("com.github.luben:zstd-jni:1.5.2-2") // MultiPaper
- 
      implementation("net.fabricmc:mapping-io:0.3.0") // Paper - needed to read mappings for stacktrace deobfuscation
      // Paper start - Use Velocity cipher
+     implementation("com.velocitypowered:velocity-native:1.1.0-SNAPSHOT") {
 diff --git a/src/main/java/puregero/multipaper/ExternalServerConnection.java b/src/main/java/puregero/multipaper/ExternalServerConnection.java
 index e394f50beb1277f048d773de04fe669241cd70ee..cd8a6d7f27e03c667e5e92e30e0bf5fe476138f5 100644
 --- a/src/main/java/puregero/multipaper/ExternalServerConnection.java

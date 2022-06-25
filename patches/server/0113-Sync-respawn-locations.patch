@@ -5,10 +5,10 @@ Subject: [PATCH] Sync respawn locations
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index e4fde856060cc3b877abd426b5a5b45bec33066e..3e9e2ab7c8390a0685dada3045876cc9f955d7aa 100644
+index a3c942456a404ec0b497ceab7b86504c00af42b2..f5a4d0255b6bfc7881fb9d6cf8db0173609ec8c9 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -206,11 +206,11 @@ public class ServerPlayer extends Player {
+@@ -215,11 +215,11 @@ public class ServerPlayer extends Player {
      @Nullable
      private Vec3 enteredLavaOnVehiclePosition;
      private SectionPos lastSectionPos;
@@ -24,7 +24,7 @@ index e4fde856060cc3b877abd426b5a5b45bec33066e..3e9e2ab7c8390a0685dada3045876cc9
      private final TextFilter textFilter;
      private boolean textFilteringEnabled;
      private boolean allowsListing;
-@@ -2201,6 +2201,8 @@ public class ServerPlayer extends Player {
+@@ -2235,6 +2235,8 @@ public class ServerPlayer extends Player {
              this.respawnForced = false;
          }
  
@@ -59,7 +59,7 @@ index fe7e5dda2d9d0f6f218e37b591d0a8559aa5c5b2..6c57fee7a01ab9fab452edbd81ec28e5
          MultiPaperEnderChestHandler.sendFullEnderChestUpdate(player, connections);
 diff --git a/src/main/java/puregero/multipaper/externalserverprotocol/PlayerSetRespawnPosition.java b/src/main/java/puregero/multipaper/externalserverprotocol/PlayerSetRespawnPosition.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..81eb8c819b7119de8b2ab1ea123d2a17bad3176e
+index 0000000000000000000000000000000000000000..fc0bbe03bc9806c8798acf7273410f90efd374a9
 --- /dev/null
 +++ b/src/main/java/puregero/multipaper/externalserverprotocol/PlayerSetRespawnPosition.java
 @@ -0,0 +1,80 @@
@@ -101,7 +101,7 @@ index 0000000000000000000000000000000000000000..81eb8c819b7119de8b2ab1ea123d2a17
 +
 +    public PlayerSetRespawnPosition(FriendlyByteBuf in) {
 +        uuid = in.readUUID();
-+        dimension = ResourceKey.elementKey(Registry.DIMENSION_REGISTRY).apply(new ResourceLocation(in.readUtf()));
++        dimension = in.readResourceKey(Registry.DIMENSION_REGISTRY);
 +        pos = in.readBoolean() ? BlockPos.of(in.readLong()) : null;
 +        angle = in.readFloat();
 +        forced = in.readBoolean();
@@ -110,7 +110,7 @@ index 0000000000000000000000000000000000000000..81eb8c819b7119de8b2ab1ea123d2a17
 +    @Override
 +    public void write(FriendlyByteBuf out) {
 +        out.writeUUID(uuid);
-+        out.writeUtf(dimension.location().toString());
++        out.writeResourceKey(dimension);
 +
 +        out.writeBoolean(pos != null);
 +        if (pos != null) {

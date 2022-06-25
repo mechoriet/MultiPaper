@@ -5,10 +5,10 @@ Subject: [PATCH] Reduce entity allocations
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 7c30994e750204c9113bed03e79286dc965214b2..1eaa1eb845aabf19f49f9d44b4df6b3ef2e395cc 100644
+index f9510b32a49c339d46eb2afe2718c5b38c6d5ec1..5718a4edab3e4fcabb70104944a0de636e3955ed 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -327,6 +327,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -388,6 +388,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      // Spigot end
      // Airplane start
      public int activatedPriority = gg.airplane.AirplaneConfig.maximumActivationPrio; // golf score
@@ -47,10 +47,10 @@ index c770ee21b7b699522941f6a1584d532001c04082..dddf464fd3699764f3eddb1854478563
  
      public boolean hasAttribute(Attribute attribute) {
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index ab267a7bca7d848b359a8886b7dfb193de3f2a31..c729b7a390470fdcc81f1ec6b12593b70652104e 100644
+index 3fcb714f0aa0ee83d557cea86750b197d3576a70..fdc1c3b648b2af0b60a35c51f05941ee8630cac1 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -172,6 +172,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -183,6 +183,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
      public final Map<Explosion.CacheKey, Float> explosionDensityCache = new HashMap<>(); // Paper - Optimize explosions
      public java.util.ArrayDeque<net.minecraft.world.level.block.RedstoneTorchBlock.Toggle> redstoneUpdateInfos; // Paper - Move from Map in BlockRedstoneTorch to here
  

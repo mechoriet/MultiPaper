@@ -5,23 +5,23 @@ Subject: [PATCH] Use thread unsafe random for mob spawning
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index e74621cbb5adea5490bc4002e421b5dd13edb01d..beb50fd80f8103bb9b95bbfabc5d0c3a492808de 100644
+index 1a7fcf5cdecc46b6122f803b06878e132250f4d2..8e0053d964be0d813fa7c71c7e453924fa09682f 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -736,7 +736,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -756,7 +756,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
      }
      // Paper start - optimise random block ticking
      private final BlockPos.MutableBlockPos chunkTickMutablePosition = new BlockPos.MutableBlockPos();
--    private final io.papermc.paper.util.math.ThreadUnsafeRandom randomTickRandom = new io.papermc.paper.util.math.ThreadUnsafeRandom();
-+    private final io.papermc.paper.util.math.ThreadUnsafeRandom randomTickRandom = new io.papermc.paper.util.math.ThreadUnsafeRandom(); public java.util.Random getThreadUnsafeRandom() { return this.randomTickRandom; } // Airplane - getter
+-    private final io.papermc.paper.util.math.ThreadUnsafeRandom randomTickRandom = new io.papermc.paper.util.math.ThreadUnsafeRandom(this.random.nextLong());
++    private final io.papermc.paper.util.math.ThreadUnsafeRandom randomTickRandom = new io.papermc.paper.util.math.ThreadUnsafeRandom(this.random.nextLong()); public io.papermc.paper.util.math.ThreadUnsafeRandom getThreadUnsafeRandom() { return this.randomTickRandom; } // Airplane - getter
      // Paper end
  
      private int currentIceAndSnowTick = 0; protected void resetIceAndSnowTick() { this.currentIceAndSnowTick = this.randomTickRandom.nextInt(16); } // Airplane
 diff --git a/src/main/java/net/minecraft/world/level/NaturalSpawner.java b/src/main/java/net/minecraft/world/level/NaturalSpawner.java
-index d87900e2a9559a34ee66e3cffab851a578c0278e..e30fc787478536d9abf7ad34ddce3070ab5b0176 100644
+index e31a2eea9a62ab2c0bed1a97dab6bae231b8cd8b..d099f8e7c2c222f7e1d7b1e27e2478a47b89e092 100644
 --- a/src/main/java/net/minecraft/world/level/NaturalSpawner.java
 +++ b/src/main/java/net/minecraft/world/level/NaturalSpawner.java
-@@ -413,12 +413,12 @@ public final class NaturalSpawner {
+@@ -414,12 +414,12 @@ public final class NaturalSpawner {
          }
      }
  

@@ -5,10 +5,10 @@ Subject: [PATCH] Sync player files
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerAdvancements.java b/src/main/java/net/minecraft/server/PlayerAdvancements.java
-index b16287a47870978706734b928b87f2357e91e3a1..dfc40e6a5f516091913870233c1c78d57fcde681 100644
+index de0513b38e5fa0138f1cee6bb633561be12449fc..0be3940d2b1b401d052ee5c883c04dee242ddb3b 100644
 --- a/src/main/java/net/minecraft/server/PlayerAdvancements.java
 +++ b/src/main/java/net/minecraft/server/PlayerAdvancements.java
-@@ -51,6 +51,8 @@ import net.minecraft.server.players.PlayerList;
+@@ -50,6 +50,8 @@ import net.minecraft.server.players.PlayerList;
  import net.minecraft.util.datafix.DataFixTypes;
  import net.minecraft.world.level.GameRules;
  import org.slf4j.Logger;
@@ -17,14 +17,14 @@ index b16287a47870978706734b928b87f2357e91e3a1..dfc40e6a5f516091913870233c1c78d5
  
  public class PlayerAdvancements {
  
-@@ -156,9 +158,13 @@ public class PlayerAdvancements {
+@@ -155,9 +157,13 @@ public class PlayerAdvancements {
      }
  
      private void load(ServerAdvancementManager advancementLoader) {
 -        if (this.file.isFile()) {
 +        // MultiPaper start
 +        String json = ExternalPlayer.loadedAdvancements.remove(player.getUUID());
-+        if (json == null) json = MultiPaper.readAdvancements(player.server.storageSource.levelPath.getFileName().toString(), player.getStringUUID());
++        if (json == null) json = MultiPaper.readAdvancements(player.server.storageSource.getLevelId(), player.getStringUUID());
 +        if ((json != null && !json.isEmpty()) || this.file.isFile()) {
 +        // MultiPaper end
              try {
@@ -33,7 +33,7 @@ index b16287a47870978706734b928b87f2357e91e3a1..dfc40e6a5f516091913870233c1c78d5
  
                  try {
                      jsonreader.setLenient(false);
-@@ -216,8 +222,9 @@ public class PlayerAdvancements {
+@@ -215,8 +221,9 @@ public class PlayerAdvancements {
          this.registerListeners(advancementLoader);
      }
  
@@ -45,7 +45,7 @@ index b16287a47870978706734b928b87f2357e91e3a1..dfc40e6a5f516091913870233c1c78d5
          Map<ResourceLocation, AdvancementProgress> map = Maps.newHashMap();
          Iterator iterator = this.advancements.entrySet().iterator();
  
-@@ -238,7 +245,22 @@ public class PlayerAdvancements {
+@@ -237,7 +244,22 @@ public class PlayerAdvancements {
  
          jsonelement.getAsJsonObject().addProperty("DataVersion", SharedConstants.getCurrentVersion().getWorldVersion());
  
@@ -60,7 +60,7 @@ index b16287a47870978706734b928b87f2357e91e3a1..dfc40e6a5f516091913870233c1c78d5
          try {
 +            // MultiPaper start
 +            if (true) {
-+                MultiPaper.writeAdvancements(player.server.storageSource.levelPath.getFileName().toString(), player.getStringUUID(), PlayerAdvancements.GSON.toJson(jsonelement));
++                MultiPaper.writeAdvancements(player.server.storageSource.getLevelId(), player.getStringUUID(), PlayerAdvancements.GSON.toJson(jsonelement));
 +                return;
 +            }
 +            // MultiPaper end
@@ -69,10 +69,10 @@ index b16287a47870978706734b928b87f2357e91e3a1..dfc40e6a5f516091913870233c1c78d5
  
              try {
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 757038c2f480c392abae9401906700907d2e4cd1..db3a607075d85233952a3fb7ea66e739c8d7424d 100644
+index de9ef4bc5b9f7709cab22a3577894c530822ef45..0079030700904d5f605167056cae78e2670d8600 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -601,6 +601,7 @@ public abstract class PlayerList {
+@@ -604,6 +604,7 @@ public abstract class PlayerList {
          if (!player.getBukkitEntity().isPersistent()) return; // CraftBukkit
          if (!player.didPlayerJoinEvent) return; // Paper - If we never fired PJE, we disconnected during login. Data has not changed, and additionally, our saved vehicle is not loaded! If we save now, we will lose our vehicle (CraftBukkit bug)
          player.lastSave = MinecraftServer.currentTick; // Paper
@@ -81,7 +81,7 @@ index 757038c2f480c392abae9401906700907d2e4cd1..db3a607075d85233952a3fb7ea66e739
          ServerStatsCounter serverstatisticmanager = (ServerStatsCounter) player.getStats(); // CraftBukkit
  
 diff --git a/src/main/java/net/minecraft/stats/ServerStatsCounter.java b/src/main/java/net/minecraft/stats/ServerStatsCounter.java
-index c59f98ca3adfdd90cdc5999aeadbb0834efedc0f..adb8457d530397cad66ec3f05902eedd17bf5ca0 100644
+index c59f98ca3adfdd90cdc5999aeadbb0834efedc0f..c6b4765ec39ec4a7e544b0131092ee2f732e6838 100644
 --- a/src/main/java/net/minecraft/stats/ServerStatsCounter.java
 +++ b/src/main/java/net/minecraft/stats/ServerStatsCounter.java
 @@ -17,12 +17,9 @@ import it.unimi.dsi.fastutil.objects.ObjectIterator;
@@ -116,7 +116,7 @@ index c59f98ca3adfdd90cdc5999aeadbb0834efedc0f..adb8457d530397cad66ec3f05902eedd
 +        if (true) {
 +            try {
 +                String json = ExternalPlayer.loadedStats.remove(UUID.fromString(this.file.getName().split("\\.")[0]));
-+                if (json == null) json = MultiPaper.readStats(server.storageSource.levelPath.getFileName().toString(), this.file.getName().split("\\.")[0]);
++                if (json == null) json = MultiPaper.readStats(server.storageSource.getLevelId(), this.file.getName().split("\\.")[0]);
 +                if (!json.isEmpty()) {
 +                    this.parseLocal(server.getFixerUpper(), json);
 +                }
@@ -137,7 +137,7 @@ index c59f98ca3adfdd90cdc5999aeadbb0834efedc0f..adb8457d530397cad66ec3f05902eedd
          try {
 +            // MultiPaper start
 +            if (true) {
-+                MultiPaper.writeStats(server.storageSource.levelPath.getFileName().toString(), this.file.getName().split("\\.")[0], this.toJson());
++                MultiPaper.writeStats(server.storageSource.getLevelId(), this.file.getName().split("\\.")[0], this.toJson());
 +                return;
 +            }
 +            // MultiPaper end
@@ -154,7 +154,7 @@ index c59f98ca3adfdd90cdc5999aeadbb0834efedc0f..adb8457d530397cad66ec3f05902eedd
          ObjectIterator objectiterator = this.stats.object2IntEntrySet().iterator();
  
 diff --git a/src/main/java/net/minecraft/world/level/storage/PlayerDataStorage.java b/src/main/java/net/minecraft/world/level/storage/PlayerDataStorage.java
-index 601f8099f74e81c17600566b3c9b7a6dd39c9bcb..9dc105731c52c1783ded2c5e6825cbb6a1cd73f1 100644
+index 601f8099f74e81c17600566b3c9b7a6dd39c9bcb..97c10f3adc8d5c0fbad3cd8a00b2cf341c7a4705 100644
 --- a/src/main/java/net/minecraft/world/level/storage/PlayerDataStorage.java
 +++ b/src/main/java/net/minecraft/world/level/storage/PlayerDataStorage.java
 @@ -17,15 +17,18 @@ import org.slf4j.Logger;
@@ -183,7 +183,7 @@ index 601f8099f74e81c17600566b3c9b7a6dd39c9bcb..9dc105731c52c1783ded2c5e6825cbb6
 +
 +            // MultiPaper start
 +            if (true) {
-+                MultiPaper.writePlayer(session.levelPath.getFileName().toString(), player.getStringUUID(), nbttagcompound);
++                MultiPaper.writePlayer(session.getLevelId(), player.getStringUUID(), nbttagcompound);
 +                return;
 +            }
 +            // MultiPaper end
@@ -195,7 +195,7 @@ index 601f8099f74e81c17600566b3c9b7a6dd39c9bcb..9dc105731c52c1783ded2c5e6825cbb6
          CompoundTag nbttagcompound = null;
  
          try {
-+            nbttagcompound = MultiPaper.readPlayer(session.levelPath.getFileName().toString(), player.getStringUUID()); // MultiPaper
++            nbttagcompound = MultiPaper.readPlayer(session.getLevelId(), player.getStringUUID()); // MultiPaper
 +
 +            if (false) { // MultiPaper
              File file = new File(this.playerDir, player.getStringUUID() + ".dat");
@@ -227,16 +227,16 @@ index 601f8099f74e81c17600566b3c9b7a6dd39c9bcb..9dc105731c52c1783ded2c5e6825cbb6
      // CraftBukkit start
      public CompoundTag getPlayerData(String s) {
          try {
-+            if (true) return MultiPaper.readPlayer(session.levelPath.getFileName().toString(), s); // MultiPaper
++            if (true) return MultiPaper.readPlayer(session.getLevelId(), s); // MultiPaper
 +
              File file1 = new File(this.playerDir, s + ".dat");
  
              if (file1.exists()) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index ce78e024244c14530270b8276e5b0fd853f0a110..3edd109a8389a69dd880e0516b16d13a269daa95 100644
+index abcce6bd0b32d0188751393a6f56f2e82530912c..29b3a70be0fdc0d5440d9ef6f385faba58267f03 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -152,6 +152,7 @@ import org.bukkit.scoreboard.Scoreboard;
+@@ -149,6 +149,7 @@ import org.bukkit.scoreboard.Scoreboard;
  import org.jetbrains.annotations.NotNull;
  
  import net.md_5.bungee.api.chat.BaseComponent; // Spigot
@@ -244,7 +244,7 @@ index ce78e024244c14530270b8276e5b0fd853f0a110..3edd109a8389a69dd880e0516b16d13a
  
  @DelegateDeserialization(CraftOfflinePlayer.class)
  public class CraftPlayer extends CraftHumanEntity implements Player {
-@@ -1222,6 +1223,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1219,6 +1220,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      @Override
      public void saveData() {
@@ -253,7 +253,7 @@ index ce78e024244c14530270b8276e5b0fd853f0a110..3edd109a8389a69dd880e0516b16d13a
      }
  
 diff --git a/src/main/java/puregero/multipaper/ExternalPlayer.java b/src/main/java/puregero/multipaper/ExternalPlayer.java
-index 7c35f00c7f8a8d9416ef0003564b6791e10212e4..f845234c2b503c63a7c090a93ddb90d54bd4ac8b 100644
+index 9effb845199b6cb331d80a61adbde66f6fe2de48..3d61be7dca76a0eea39bce8f7455176d2f6b9a98 100644
 --- a/src/main/java/puregero/multipaper/ExternalPlayer.java
 +++ b/src/main/java/puregero/multipaper/ExternalPlayer.java
 @@ -19,16 +19,21 @@ import org.bukkit.craftbukkit.CraftWorld;
@@ -280,7 +280,7 @@ index 7c35f00c7f8a8d9416ef0003564b6791e10212e4..f845234c2b503c63a7c090a93ddb90d5
      }
  
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index 9814b7646b9c9aace14e0af9a1de3ea3e2ac4a2d..c84ec3decaa3d380dbbeb490aaf07023b0cdad5f 100644
+index a391f44fce52ee41483851e6722982d00588547a..7cbb248a95f05fb33e98b09e85fa750df602a5ee 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
 @@ -368,6 +368,34 @@ public class MultiPaper {

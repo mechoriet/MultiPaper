@@ -5,7 +5,7 @@ Subject: [PATCH] Handle projectile hits on the entity's server
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/Projectile.java b/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
-index 4fa92f32ba33cd3c15e74cc5e3eb4a713a5bc8af..929e8646593ae059dd0450dcb2ad85f38e147b9d 100644
+index c60f0da070234148419e6f8b0a8b30c49e3d00fb..f128dbea50852999a46daee2079bca940de548c3 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
 +++ b/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
 @@ -23,6 +23,9 @@ import net.minecraft.world.phys.HitResult;
@@ -47,8 +47,8 @@ index 4fa92f32ba33cd3c15e74cc5e3eb4a713a5bc8af..929e8646593ae059dd0450dcb2ad85f3
 +            }
 +            // MultiPaper end
              this.onHitEntity((EntityHitResult) hitResult);
+             this.level.gameEvent(GameEvent.PROJECTILE_LAND, hitResult.getLocation(), GameEvent.Context.of(this, (BlockState) null));
          } else if (movingobjectposition_enummovingobjecttype == HitResult.Type.BLOCK) {
-             this.onHitBlock((BlockHitResult) hitResult);
 diff --git a/src/main/java/puregero/multipaper/externalserverprotocol/ExternalServerPacketSerializer.java b/src/main/java/puregero/multipaper/externalserverprotocol/ExternalServerPacketSerializer.java
 index 6617d5d45f0211c00c1d05b5128aee47c3e00398..20a408ebffb322a7ae79b0950f52db47b4b10c31 100644
 --- a/src/main/java/puregero/multipaper/externalserverprotocol/ExternalServerPacketSerializer.java

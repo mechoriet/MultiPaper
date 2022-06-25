@@ -6,10 +6,10 @@ Subject: [PATCH] Only create a spawner state when we are actually spawning
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerChunkCache.java b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
-index e0551c713a60c39371338dbd6c8aaee4432efe5e..0b7e568f71ad014507724312ed4e052795caaf83 100644
+index 007c05996a3bb611710858cbcfadad9f631c1a88..5ca56a1d97e4ef83357d6422d22f555e35bcbe9c 100644
 --- a/src/main/java/net/minecraft/server/level/ServerChunkCache.java
 +++ b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
-@@ -976,7 +976,9 @@ public class ServerChunkCache extends ChunkSource {
+@@ -977,7 +977,9 @@ public class ServerChunkCache extends ChunkSource {
              this.level.timings.countNaturalMobs.startTiming(); // Paper - timings
              int l = this.distanceManager.getNaturalSpawnChunkCount();
              // Paper start - per player mob spawning
@@ -20,7 +20,7 @@ index e0551c713a60c39371338dbd6c8aaee4432efe5e..0b7e568f71ad014507724312ed4e0527
              if ((this.spawnFriendlies || this.spawnEnemies) && this.chunkMap.playerMobDistanceMap != null) { // don't count mobs when animals and monsters are disabled
                  // Pufferfish start - moved down when async processing
                  if (!gg.pufferfish.pufferfish.PufferfishConfig.enableAsyncMobSpawning) {
-@@ -997,6 +999,7 @@ public class ServerChunkCache extends ChunkSource {
+@@ -998,6 +1000,7 @@ public class ServerChunkCache extends ChunkSource {
              this.level.timings.countNaturalMobs.stopTiming(); // Paper - timings
  
              //this.lastSpawnState = spawnercreature_d; // Pufferfish - this is managed asynchronously
@@ -28,7 +28,7 @@ index e0551c713a60c39371338dbd6c8aaee4432efe5e..0b7e568f71ad014507724312ed4e0527
              gameprofilerfiller.popPush("filteringLoadedChunks");
              // Paper - moved down
              this.level.timings.chunkTicks.startTiming(); // Paper
-@@ -1004,7 +1007,7 @@ public class ServerChunkCache extends ChunkSource {
+@@ -1005,7 +1008,7 @@ public class ServerChunkCache extends ChunkSource {
              // Paper - moved down
  
              gameprofilerfiller.popPush("spawnAndTick");
@@ -37,7 +37,7 @@ index e0551c713a60c39371338dbd6c8aaee4432efe5e..0b7e568f71ad014507724312ed4e0527
  
              // Paper - only shuffle if per-player mob spawning is disabled
              // Paper - moved natural spawn event up
-@@ -1138,6 +1141,20 @@ public class ServerChunkCache extends ChunkSource {
+@@ -1139,6 +1142,20 @@ public class ServerChunkCache extends ChunkSource {
          // Pufferfish end
      }
  

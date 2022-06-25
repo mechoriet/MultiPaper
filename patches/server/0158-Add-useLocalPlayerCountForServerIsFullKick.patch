@@ -5,10 +5,10 @@ Subject: [PATCH] Add useLocalPlayerCountForServerIsFullKick
 
 
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 51eca4355f570dea616504f6b74a15b03fd2dd51..2d3b9f1a0d0b112fbd52b1e25a4d44e663c6fcf2 100644
+index bd365538ed3fa63e6c49422e2b5a7a13a17190a9..56c3b9bf2cac22749f8258365d7d84b01544d618 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -115,6 +115,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
+@@ -117,6 +117,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
  import puregero.multipaper.ExternalPlayer;
  import puregero.multipaper.ExternalServerConnection;
  import puregero.multipaper.MultiPaper;
@@ -16,10 +16,10 @@ index 51eca4355f570dea616504f6b74a15b03fd2dd51..2d3b9f1a0d0b112fbd52b1e25a4d44e6
  import puregero.multipaper.externalserverprotocol.*;
  // CraftBukkit end
  
-@@ -807,7 +808,8 @@ public abstract class PlayerList {
-             event.disallow(PlayerLoginEvent.Result.KICK_BANNED, PaperAdventure.asAdventure(chatmessage)); // Paper - Adventure
+@@ -810,7 +811,8 @@ public abstract class PlayerList {
+             event.disallow(PlayerLoginEvent.Result.KICK_BANNED, PaperAdventure.asAdventure(ichatmutablecomponent)); // Paper - Adventure
          } else {
-             // return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(gameprofile) ? new ChatMessage("multiplayer.disconnect.server_full") : null;
+             // return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(gameprofile) ? IChatBaseComponent.translatable("multiplayer.disconnect.server_full") : null;
 -            if (this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(gameprofile)) {
 +            boolean isFull = MultiPaperConfig.useLocalPlayerCountForServerIsFullKick ? this.localPlayers.size() >= this.maxPlayers : this.players.size() >= this.maxPlayers; // MultiPaper - add isFull
 +            if (isFull && !this.canBypassPlayerLimit(gameprofile)) { // MultiPaper - add isFull

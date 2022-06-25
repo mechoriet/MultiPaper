@@ -5,10 +5,10 @@ Subject: [PATCH] Hurt external entities
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 93eddc7fbb73e1b4e92711c92b6c7020f3eca8eb..2ae111e7adbef3bd99e1592035c516e2686624ba 100644
+index ea09760a260348050fbfa1c957c9a399c6aed42e..dd98b5962d02de133ad1c6ca8f4f1e55a2825ca2 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -139,7 +139,10 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
+@@ -140,7 +140,10 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
  import org.bukkit.event.entity.EntityResurrectEvent;
  import org.bukkit.event.entity.EntityTeleportEvent;
  import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -19,7 +19,7 @@ index 93eddc7fbb73e1b4e92711c92b6c7020f3eca8eb..2ae111e7adbef3bd99e1592035c516e2
  // CraftBukkit end
  
  
-@@ -1300,6 +1303,15 @@ public abstract class LivingEntity extends Entity {
+@@ -1323,6 +1326,15 @@ public abstract class LivingEntity extends Entity {
  
      @Override
      public boolean hurt(DamageSource source, float amount) {
@@ -36,7 +36,7 @@ index 93eddc7fbb73e1b4e92711c92b6c7020f3eca8eb..2ae111e7adbef3bd99e1592035c516e2
              return false;
          } else if (this.level.isClientSide) {
 diff --git a/src/main/java/puregero/multipaper/ExternalPlayer.java b/src/main/java/puregero/multipaper/ExternalPlayer.java
-index 59b2e3b3c08ca3827d187addf30ec9010d8b10ea..31ad2069d28f7afc3046e4ef532cc6a032f18b08 100644
+index 2b9b4ad688b71aad9963e7831cafdac1cc7b991c..487e4310f95fd838b4486809eb6aa6c809a2b05a 100644
 --- a/src/main/java/puregero/multipaper/ExternalPlayer.java
 +++ b/src/main/java/puregero/multipaper/ExternalPlayer.java
 @@ -11,13 +11,16 @@ import net.minecraft.network.syncher.EntityDataAccessor;

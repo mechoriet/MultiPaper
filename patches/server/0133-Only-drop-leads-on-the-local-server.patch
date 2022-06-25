@@ -5,10 +5,10 @@ Subject: [PATCH] Only drop leads on the local server
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
-index f7bbed77796aad9cf95f38f223ee0dfe120aff51..ebc5086b6d0a131e39232c506dd52f2a522382c1 100644
+index 49671da87f91a1103818df514c4f8dd76c6f6f3d..3a490a964c7c5939601d6c0ab2a68446a5a20058 100644
 --- a/src/main/java/net/minecraft/world/entity/Mob.java
 +++ b/src/main/java/net/minecraft/world/entity/Mob.java
-@@ -81,6 +81,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
+@@ -84,6 +84,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
  import org.bukkit.event.entity.EntityTransformEvent;
  import org.bukkit.event.entity.EntityUnleashEvent;
  import org.bukkit.event.entity.EntityUnleashEvent.UnleashReason;
@@ -16,7 +16,7 @@ index f7bbed77796aad9cf95f38f223ee0dfe120aff51..ebc5086b6d0a131e39232c506dd52f2a
  // CraftBukkit end
  
  public abstract class Mob extends LivingEntity {
-@@ -1422,7 +1423,7 @@ public abstract class Mob extends LivingEntity {
+@@ -1436,7 +1437,7 @@ public abstract class Mob extends LivingEntity {
          if (this.leashHolder != null) {
              this.leashHolder = null;
              this.leashInfoTag = null;

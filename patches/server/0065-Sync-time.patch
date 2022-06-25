@@ -5,10 +5,10 @@ Subject: [PATCH] Sync time
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index f0e430eae1853d4c35dc0e84edd031667ba1e529..0491fe7ff20e80637afceb6411ace9053b06b63c 100644
+index 32dffbcf1943c000d0e8927caab3a4aef9027eec..eb1ae71abf124914be3352dbcd7c528bc7cff03f 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1561,6 +1561,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1519,6 +1519,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              long worldTime = world.getGameTime();
              final ClientboundSetTimePacket worldPacket = new ClientboundSetTimePacket(worldTime, dayTime, doDaylight);
              for (Player entityhuman : world.players()) {
@@ -17,7 +17,7 @@ index f0e430eae1853d4c35dc0e84edd031667ba1e529..0491fe7ff20e80637afceb6411ace905
                      continue;
                  }
 diff --git a/src/main/java/net/minecraft/server/commands/TimeCommand.java b/src/main/java/net/minecraft/server/commands/TimeCommand.java
-index da854c5bfaf9e791b272a497caf864748f3dfbda..1bdc5853b3bb7fe8a58b2421f933097ba6f9823b 100644
+index f0a7a8df3caa2ea765bb0a87cfede71d0995d276..8b16d7f426d7f934a9569dd39605fa9c9b482ee0 100644
 --- a/src/main/java/net/minecraft/server/commands/TimeCommand.java
 +++ b/src/main/java/net/minecraft/server/commands/TimeCommand.java
 @@ -11,6 +11,8 @@ import net.minecraft.server.level.ServerLevel;
@@ -46,10 +46,10 @@ index da854c5bfaf9e791b272a497caf864748f3dfbda..1bdc5853b3bb7fe8a58b2421f933097b
              // CraftBukkit end
          }
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 2ebd843ccb3bed425129000da1d71a491c299029..a7c5022496793c875e481b32ffce9b3bb4aa05c5 100644
+index f9bc22ed0bd121ba2176537b5c827735f805449e..5f4407df9543d06d1b718e3ae033cb54f7eb3923 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -164,6 +164,7 @@ import org.bukkit.event.world.TimeSkipEvent;
+@@ -171,6 +171,7 @@ import org.bukkit.event.world.TimeSkipEvent;
  import it.unimi.dsi.fastutil.ints.IntArrayList; // Paper
  import puregero.multipaper.MultiPaper;
  import puregero.multipaper.MultiPaperChunkHandler;
@@ -57,7 +57,7 @@ index 2ebd843ccb3bed425129000da1d71a491c299029..a7c5022496793c875e481b32ffce9b3b
  
  public class ServerLevel extends Level implements WorldGenLevel {
  
-@@ -596,6 +597,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -614,6 +615,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
                  getCraftServer().getPluginManager().callEvent(event);
                  if (!event.isCancelled()) {
                      this.setDayTime(this.getDayTime() + event.getSkipAmount());
@@ -66,7 +66,7 @@ index 2ebd843ccb3bed425129000da1d71a491c299029..a7c5022496793c875e481b32ffce9b3b
              }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 43244a479a112786539a905a22cb12e3cf55b2dd..db0ab6cfcc4f9be4a8a60834e9fe2f51993e2317 100644
+index 25e56be9055c5c432e1180d45341f4e9d9fcb7ca..48739c60ee31a84742c3311b7104b386e7a317fa 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -129,6 +129,8 @@ import org.bukkit.util.BoundingBox;
@@ -78,7 +78,7 @@ index 43244a479a112786539a905a22cb12e3cf55b2dd..db0ab6cfcc4f9be4a8a60834e9fe2f51
  
  public class CraftWorld extends CraftRegionAccessor implements World {
      public static final int CUSTOM_DIMENSION_OFFSET = 10;
-@@ -857,6 +859,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -856,6 +858,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
          }
  
          this.world.setDayTime(this.world.getDayTime() + event.getSkipAmount());
@@ -87,7 +87,7 @@ index 43244a479a112786539a905a22cb12e3cf55b2dd..db0ab6cfcc4f9be4a8a60834e9fe2f51
          // Forces the client to update to the new time immediately
          for (Player p : this.getPlayers()) {
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index bbc56df8d5fe6fd766a2454ccf4fd8961c560ce2..a01d4a0cfa91be572cc53ee5855a95d3dd486134 100644
+index 2d2eceab6391f83f402b48723cefc336552c5fd4..7dd1101a3c2e1d94ab584fe888565315089e757e 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
 @@ -142,6 +142,12 @@ public class MultiPaper {

@@ -5,10 +5,10 @@ Subject: [PATCH] Sync advancements in real time
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerAdvancements.java b/src/main/java/net/minecraft/server/PlayerAdvancements.java
-index dfc40e6a5f516091913870233c1c78d57fcde681..7d207be1a4e9147e898c09efd5acf18a5303daf9 100644
+index 0be3940d2b1b401d052ee5c883c04dee242ddb3b..fe3a0ee57ceda7811464942ae484296dee33c3af 100644
 --- a/src/main/java/net/minecraft/server/PlayerAdvancements.java
 +++ b/src/main/java/net/minecraft/server/PlayerAdvancements.java
-@@ -53,6 +53,7 @@ import net.minecraft.world.level.GameRules;
+@@ -52,6 +52,7 @@ import net.minecraft.world.level.GameRules;
  import org.slf4j.Logger;
  import puregero.multipaper.ExternalPlayer;
  import puregero.multipaper.MultiPaper;
@@ -16,7 +16,7 @@ index dfc40e6a5f516091913870233c1c78d57fcde681..7d207be1a4e9147e898c09efd5acf18a
  
  public class PlayerAdvancements {
  
-@@ -308,10 +309,11 @@ public class PlayerAdvancements {
+@@ -307,10 +308,11 @@ public class PlayerAdvancements {
                  return false;
              }
              // Paper end
@@ -28,7 +28,7 @@ index dfc40e6a5f516091913870233c1c78d57fcde681..7d207be1a4e9147e898c09efd5acf18a
 +            if (!flag1 && advancementprogress.isDone() && MultiPaper.isRealPlayer(player)) { // MultiPaper - only broadcast advancement message for our players
                  // Paper start - Add Adventure message to PlayerAdvancementDoneEvent
                  boolean announceToChat = advancement.getDisplay() != null && advancement.getDisplay().shouldAnnounceChat();
-                 net.kyori.adventure.text.Component message = announceToChat ? io.papermc.paper.adventure.PaperAdventure.asAdventure(new TranslatableComponent("chat.type.advancement." + advancement.getDisplay().getFrame().getName(), this.player.getDisplayName(), advancement.getChatComponent())) : null;
+                 net.kyori.adventure.text.Component message = announceToChat ? io.papermc.paper.adventure.PaperAdventure.asAdventure(Component.translatable("chat.type.advancement." + advancement.getDisplay().getFrame().getName(), this.player.getDisplayName(), advancement.getChatComponent())) : null;
 diff --git a/src/main/java/puregero/multipaper/externalserverprotocol/AdvancementGrantProgressPacket.java b/src/main/java/puregero/multipaper/externalserverprotocol/AdvancementGrantProgressPacket.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..e1130055ba1cb66678d8e6bbeecef5dc98aea7f5

@@ -23,10 +23,10 @@ index 0fcd73e7fa0752d727fc602bde8d21306e6b8b60..cbd980858d23eda1e7925e72bc471f7a
  	private static void ensureDefault(String key, Object defaultValue, String... comment) {
  		if (!config.contains(key)) {
 diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
-index 011a458958d1ab2a445bea7c13e5a744f4569fcc..be7f3038e998dbd51ae7df1950583a0b89e477ff 100644
+index 81c73d62b5c9f0478c2caae3cb51fb5f7725529a..d34a7ac8c11fd84c95f8e4c5c45beaa3f6a8ee53 100644
 --- a/src/main/java/net/minecraft/world/entity/Mob.java
 +++ b/src/main/java/net/minecraft/world/entity/Mob.java
-@@ -205,11 +205,13 @@ public abstract class Mob extends LivingEntity {
+@@ -210,11 +210,13 @@ public abstract class Mob extends LivingEntity {
          return this.lookControl;
      }
  

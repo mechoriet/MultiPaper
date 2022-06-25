@@ -5,10 +5,10 @@ Subject: [PATCH] Sync weather
 
 
 diff --git a/src/main/java/net/minecraft/world/level/storage/PrimaryLevelData.java b/src/main/java/net/minecraft/world/level/storage/PrimaryLevelData.java
-index 95635cc7367b757d149bb2c81326a041f84782f0..629fb98949f8972bf2221465d942886d906d633e 100644
+index e537a8df45c31efa80cb898cbef9c3a09fac3bf9..c86574fd72f39628ad5c74700ab4ea934d61a3be 100644
 --- a/src/main/java/net/minecraft/world/level/storage/PrimaryLevelData.java
 +++ b/src/main/java/net/minecraft/world/level/storage/PrimaryLevelData.java
-@@ -46,6 +46,7 @@ import org.slf4j.Logger;
+@@ -47,6 +47,7 @@ import org.slf4j.Logger;
  import org.bukkit.Bukkit;
  import org.bukkit.event.weather.ThunderChangeEvent;
  import org.bukkit.event.weather.WeatherChangeEvent;
@@ -16,7 +16,7 @@ index 95635cc7367b757d149bb2c81326a041f84782f0..629fb98949f8972bf2221465d942886d
  // CraftBukkit end
  
  public class PrimaryLevelData implements ServerLevelData, WorldData {
-@@ -366,6 +367,8 @@ public class PrimaryLevelData implements ServerLevelData, WorldData {
+@@ -371,6 +372,8 @@ public class PrimaryLevelData implements ServerLevelData, WorldData {
          }
          // CraftBukkit end
          this.thundering = thundering;
@@ -25,7 +25,7 @@ index 95635cc7367b757d149bb2c81326a041f84782f0..629fb98949f8972bf2221465d942886d
      }
  
      @Override
-@@ -406,6 +409,8 @@ public class PrimaryLevelData implements ServerLevelData, WorldData {
+@@ -411,6 +414,8 @@ public class PrimaryLevelData implements ServerLevelData, WorldData {
          }
          // CraftBukkit end
          this.raining = raining;

@@ -5,10 +5,10 @@ Subject: [PATCH] Sync permissions
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-index 204a3481624cc0d03a7dc6e7093cf98c8a695258..13f0859a0a6996f2bfebfb2f922ef1870d927415 100644
+index e7469237a3cfb3b3823cbd0a02d002d7314ad008..18e2325a977abc1a344a5781cb503169ce4ae48d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-@@ -68,7 +68,7 @@ import puregero.multipaper.externalserverprotocol.PlayerFoodUpdatePacket;
+@@ -69,7 +69,7 @@ import puregero.multipaper.externalserverprotocol.PlayerFoodUpdatePacket;
  public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
      private CraftInventoryPlayer inventory;
      private final CraftInventory enderChest;
@@ -17,7 +17,7 @@ index 204a3481624cc0d03a7dc6e7093cf98c8a695258..13f0859a0a6996f2bfebfb2f922ef187
      private boolean op;
      private GameMode mode;
  
-@@ -211,12 +211,12 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+@@ -212,12 +212,12 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
  
      @Override
      public boolean hasPermission(String name) {
@@ -33,7 +33,7 @@ index 204a3481624cc0d03a7dc6e7093cf98c8a695258..13f0859a0a6996f2bfebfb2f922ef187
  
      @Override
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index a3fe985ba2a97c9af1ac4a9510fc5bf6daf42cb5..0b1fc789086c88fbee217eb7740e7df5fd9c8d5b 100644
+index b6ee537c7a276e4fe8b0814974bd443f2a0c14d9..4fe4381d50821b60a6e73da30f08b53269fdb83e 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
 @@ -170,6 +170,8 @@ public class MultiPaper {

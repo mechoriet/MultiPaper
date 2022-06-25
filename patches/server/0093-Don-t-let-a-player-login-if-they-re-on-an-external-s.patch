@@ -5,13 +5,13 @@ Subject: [PATCH] Don't let a player login if they're on an external server
 
 
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 8ea464f57eab0309b3e2a263f16dadb7d1d3b445..92adafb68ac8663ef0f0c93a327ea1e8dcdb6838 100644
+index f5739d2dd27e1588eb522e6f53079063deb6398c..34a32e9ca2cb31bbf93635d9ef2fdb4166478125 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -735,6 +735,12 @@ public abstract class PlayerList {
+@@ -738,6 +738,12 @@ public abstract class PlayerList {
          for (int i = 0; i < this.players.size(); ++i) {
              entityplayer = (ServerPlayer) this.players.get(i);
-             if (entityplayer.getUUID().equals(uuid) || (com.destroystokyo.paper.PaperConfig.isProxyOnlineMode() && entityplayer.getGameProfile().getName().equalsIgnoreCase(gameprofile.getName()))) { // Paper - validate usernames
+             if (entityplayer.getUUID().equals(uuid) || (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.isProxyOnlineMode() && entityplayer.getGameProfile().getName().equalsIgnoreCase(gameprofile.getName()))) { // Paper - validate usernames
 +                // MultiPaper start - don't let a player login if they're on an external server
 +                if (MultiPaper.isExternalPlayer(entityplayer)) {
 +                    loginlistener.disconnect(PaperAdventure.asVanilla(net.kyori.adventure.text.Component.text("You are already logged in.")));

@@ -5,7 +5,7 @@ Subject: [PATCH] Dont load or send chunk for external players
 
 
 diff --git a/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java b/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
-index 12bcf96ec1ba4314c7ea2eab9f3d140559f1dc08..80e503ee79e352f723e0494e92f62c781d6db34a 100644
+index b53402903eb6845df361daf6b05a668608ad7b63..3eff1a562ad1bfa866a09d1e0464bb82e9cb36fe 100644
 --- a/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
 +++ b/src/main/java/io/papermc/paper/chunk/PlayerChunkLoader.java
 @@ -22,6 +22,8 @@ import net.minecraft.world.level.chunk.LevelChunk;
@@ -27,10 +27,10 @@ index 12bcf96ec1ba4314c7ea2eab9f3d140559f1dc08..80e503ee79e352f723e0494e92f62c78
          }
          final PlayerLoaderData data = new PlayerLoaderData(player, this);
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index a72f00a9bd105976c986cd55ddfbae4e5f20b37d..70451bc01d76065c63ba54fd8629178fb4a07161 100644
+index 0e3a70348850ab1d1ddab931d089cb6e39f63c61..5dc80b6ef15bb2b42b6b65bcd93606fb192ed6a8 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
-@@ -111,6 +111,7 @@ import org.slf4j.Logger;
+@@ -114,6 +114,7 @@ import org.bukkit.craftbukkit.generator.CustomChunkGenerator;
  import org.bukkit.entity.Player;
  // CraftBukkit end
  import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet; // Paper
@@ -38,7 +38,7 @@ index a72f00a9bd105976c986cd55ddfbae4e5f20b37d..70451bc01d76065c63ba54fd8629178f
  
  public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider {
  
-@@ -1849,7 +1850,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1897,7 +1898,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
      }
  
      private boolean skipPlayer(ServerPlayer player) {
@@ -47,12 +47,12 @@ index a72f00a9bd105976c986cd55ddfbae4e5f20b37d..70451bc01d76065c63ba54fd8629178f
      }
  
      void updatePlayerStatus(ServerPlayer player, boolean added) {
-@@ -2324,7 +2325,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -2372,7 +2373,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
  
          public void updatePlayer(ServerPlayer player) {
              org.spigotmc.AsyncCatcher.catchOp("player tracker update"); // Spigot
 -            if (player != this.entity) {
 +            if (player != this.entity && MultiPaper.isRealPlayer(player)) { // MultiPaper - don't track for external players
                  // Paper start - remove allocation of Vec3D here
-                 //Vec3 vec3d = player.position().subtract(this.entity.position()); // MC-155077, SPIGOT-5113
+                 // Vec3 vec3d = player.position().subtract(this.entity.position());
                  double vec3d_dx = player.getX() - this.entity.getX();

@@ -6,10 +6,10 @@ Subject: [PATCH] Take control of external chunks to ensure a redstone
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 0491fe7ff20e80637afceb6411ace9053b06b63c..eb6c8e67b6ccc74a091b2978fc59a1aa82ec1d79 100644
+index eb1ae71abf124914be3352dbcd7c528bc7cff03f..c86c175d76bd1608f5a7dd61fc2eabfc5ffb6408 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -185,6 +185,7 @@ import org.bukkit.event.server.ServerLoadEvent;
+@@ -180,6 +180,7 @@ import org.bukkit.event.server.ServerLoadEvent;
  
  import co.aikar.timings.MinecraftTimings; // Paper
  import puregero.multipaper.MultiPaper;
@@ -17,7 +17,7 @@ index 0491fe7ff20e80637afceb6411ace9053b06b63c..eb6c8e67b6ccc74a091b2978fc59a1aa
  
  public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTask> implements CommandSource, AutoCloseable {
  
-@@ -1576,6 +1577,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1534,6 +1535,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          MinecraftTimings.timeUpdateTimer.stopTiming(); // Spigot // Paper
  
          this.isIteratingOverLevels = true; // Paper
@@ -28,10 +28,10 @@ index 0491fe7ff20e80637afceb6411ace9053b06b63c..eb6c8e67b6ccc74a091b2978fc59a1aa
              ServerLevel worldserver = (ServerLevel) iterator.next();
              worldserver.hasPhysicsEvent =  org.bukkit.event.block.BlockPhysicsEvent.getHandlerList().getRegisteredListeners().length > 0; // Paper
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index d63dedb60a2631abf750d3ba080109686dee91d5..f1dcfd1c08f6364e82437c31f7062fa0338fcf0d 100644
+index 31bc251adf231a799511411a7fbcf3108eefd72d..5c49622d780bcb72636c3a7be1a550aac4a21a2d 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -775,6 +775,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -791,6 +791,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
              return false;
          } else {
              FluidState fluid = this.getFluidState(pos);
@@ -40,10 +40,10 @@ index d63dedb60a2631abf750d3ba080109686dee91d5..f1dcfd1c08f6364e82437c31f7062fa0
              // they are NOT used with same intent and the above should not fire this event. The above method is more of a BlockSetToAirEvent,
              // it doesn't imply destruction of a block that plays a sound effect / drops an item.
 diff --git a/src/main/java/net/minecraft/world/level/LevelAccessor.java b/src/main/java/net/minecraft/world/level/LevelAccessor.java
-index 86517c755f3762cf5f86d57894d6930a3cd3f872..7e8ba7c388644a3892fd518a8742e429840b7d4a 100644
+index 83ae1b3790e9347b09f0bf0dec1839b3a7925856..9c0a6b836de9cc8309776317760d0469e8fc345c 100644
 --- a/src/main/java/net/minecraft/world/level/LevelAccessor.java
 +++ b/src/main/java/net/minecraft/world/level/LevelAccessor.java
-@@ -19,6 +19,7 @@ import net.minecraft.world.level.storage.LevelData;
+@@ -23,6 +23,7 @@ import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.ticks.LevelTickAccess;
  import net.minecraft.world.ticks.ScheduledTick;
  import net.minecraft.world.ticks.TickPriority;
@@ -51,7 +51,7 @@ index 86517c755f3762cf5f86d57894d6930a3cd3f872..7e8ba7c388644a3892fd518a8742e429
  
  public interface LevelAccessor extends CommonLevelAccessor, LevelTimeAccess {
  
-@@ -40,20 +41,24 @@ public interface LevelAccessor extends CommonLevelAccessor, LevelTimeAccess {
+@@ -44,20 +45,24 @@ public interface LevelAccessor extends CommonLevelAccessor, LevelTimeAccess {
      }
  
      default void scheduleTick(BlockPos pos, Block block, int delay, TickPriority priority) {
@@ -77,10 +77,10 @@ index 86517c755f3762cf5f86d57894d6930a3cd3f872..7e8ba7c388644a3892fd518a8742e429
      }
  
 diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-index 4e66707e0537a0fa280d57025bfbe2eb28ae8cc9..395fe597a2b53e28df65f9e92fb18c7eda01d97e 100644
+index 992b9fb0860dafd045708f0135869a480024e5f7..63d640110e79f069fd7ceef39e86ac11e5aa8071 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -606,7 +606,13 @@ public class LevelChunk extends ChunkAccess {
+@@ -615,7 +615,13 @@ public class LevelChunk extends ChunkAccess {
                  boolean flag3 = iblockdata1.hasBlockEntity();
  
                  if (!this.level.isClientSide) {
@@ -95,7 +95,7 @@ index 4e66707e0537a0fa280d57025bfbe2eb28ae8cc9..395fe597a2b53e28df65f9e92fb18c7e
                      this.removeBlockEntity(blockposition);
                  }
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index ac2800482c498ad8eafaff63230974f2ed5048d1..411a756b400740b76a959ddd0639143fc7539d72 100644
+index d5c2407ce3e3ad1fa55d616723fa40a300ffce29..7d4f89c922efa0298809dbf8a55c066770679722 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
 @@ -153,6 +153,8 @@ public class MultiPaper {

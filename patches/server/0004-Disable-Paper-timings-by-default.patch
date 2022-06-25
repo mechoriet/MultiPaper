@@ -4,23 +4,29 @@ Date: Mon, 29 Nov 2021 22:20:14 +1000
 Subject: [PATCH] Disable Paper timings by default
 
 
-diff --git a/src/main/java/com/destroystokyo/paper/PaperConfig.java b/src/main/java/com/destroystokyo/paper/PaperConfig.java
-index c9c08e20f729b40b1d90f3ac144f5245f4f35230..926822bf6b5e1ee9057033cde8a1126e99214da8 100644
---- a/src/main/java/com/destroystokyo/paper/PaperConfig.java
-+++ b/src/main/java/com/destroystokyo/paper/PaperConfig.java
-@@ -241,6 +241,15 @@ public class PaperConfig {
-     public static String timingsServerName;
-     private static void timings() {
-         boolean timings = getBoolean("timings.enabled", true);
-+        // Airplane start
-+        boolean reallyEnableTimings = getBoolean("timings.really-enabled", false);
-+        if (timings && !reallyEnableTimings) {
-+            Bukkit.getLogger().log(Level.WARNING, "[Airplane] To improve performance, timings have been disabled by default");
-+            Bukkit.getLogger().log(Level.WARNING, "[Airplane] You can still use timings by using /timings on, but they will not start on server startup unless you set timings.really-enabled to true in paper.yml");
-+            Bukkit.getLogger().log(Level.WARNING, "[Airplane] If you would like to disable this message, either set timings.really-enabled to true or timings.enabled to false.");
-+        }
-+        timings = reallyEnableTimings;
-+        // Airplane end
-         boolean verboseTimings = getBoolean("timings.verbose", true);
-         TimingsManager.url = getString("timings.url", "https://timings.aikar.co/");
-         if (!TimingsManager.url.endsWith("/")) {
+diff --git a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
+index 456595e4b7e0c7f50617aa2694b0d2dfc368ab81..80804b54f6cc7c7b26db6cc2c6c33b16eaec1c3f 100644
+--- a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
++++ b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
+@@ -52,6 +52,8 @@ public class GlobalConfiguration extends ConfigurationPart {
+ 
+     public class Timings extends ConfigurationPart.Post {
+         public boolean enabled = true;
++
++        public boolean reallyEnableTimings = true;
+         public boolean verbose = true;
+         public String url = "https://timings.aikar.co/";
+         public boolean serverNamePrivacy = false;
+@@ -65,6 +67,12 @@ public class GlobalConfiguration extends ConfigurationPart {
+ 
+         @Override
+         public void postProcess() {
++            if (enabled && !reallyEnableTimings) {
++                org.bukkit.Bukkit.getLogger().log(java.util.logging.Level.WARNING, "[Airplane] To improve performance, timings have been disabled by default");
++                org.bukkit.Bukkit.getLogger().log(java.util.logging.Level.WARNING, "[Airplane] You can still use timings by using /timings on, but they will not start on server startup unless you set timings.really-enabled to true in paper.yml");
++                org.bukkit.Bukkit.getLogger().log(java.util.logging.Level.WARNING, "[Airplane] If you would like to disable this message, either set timings.really-enabled to true or timings.enabled to false.");
++            }
++            enabled = reallyEnableTimings;
+             MinecraftTimings.processConfig(this);
+         }
+     }

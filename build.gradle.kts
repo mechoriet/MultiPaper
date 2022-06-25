@@ -4,7 +4,7 @@ import io.papermc.paperweight.util.constants.*
 plugins {
     java
     id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("io.papermc.paperweight.patcher") version "1.3.6"
+    id("io.papermc.paperweight.patcher") version "1.3.7"
 }
 
 repositories {
@@ -70,19 +70,19 @@ paperweight {
             serverOutputDir.set(layout.projectDirectory.dir("MultiPaper-Server"))
         }
     }
-    
+
     tasks.register("paperRefLatest") {
         // Update the paperRef in gradle.properties to be the latest commit
         val tempDir = layout.cacheDir("paperRefLatest");
         val file = "gradle.properties";
-        
+
         doFirst {
             data class GithubCommit(
-                    val sha: String
+                val sha: String
             )
 
             val paperLatestCommitJson = layout.cache.resolve("paperLatestCommit.json");
-            download.get().download("https://api.github.com/repos/PaperMC/Paper/commits/ver/1.18.2", paperLatestCommitJson);
+            download.get().download("https://api.github.com/repos/PaperMC/Paper/commits/master", paperLatestCommitJson);
             val paperLatestCommit = gson.fromJson<paper.libs.com.google.gson.JsonObject>(paperLatestCommitJson)["sha"].asString;
 
             copy {

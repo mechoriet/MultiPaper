@@ -5,13 +5,13 @@ Subject: [PATCH] Don't load chunks when spawning phantoms
 
 
 diff --git a/src/main/java/net/minecraft/world/level/levelgen/PhantomSpawner.java b/src/main/java/net/minecraft/world/level/levelgen/PhantomSpawner.java
-index 1e21d6cf2f03219fb2b7217c9a72bdd83c2146f7..bd621d976603a42af3eb874a0a88d1ac2bed6fb1 100644
+index 6b5c31470499e25d01936106839c2fff21b113c8..5f359c78832dfc285dda771f68e96319c0b0f487 100644
 --- a/src/main/java/net/minecraft/world/level/levelgen/PhantomSpawner.java
 +++ b/src/main/java/net/minecraft/world/level/levelgen/PhantomSpawner.java
 @@ -64,6 +64,7 @@ public class PhantomSpawner implements CustomSpawner {
  
-                                     if (random.nextInt(j) >= 72000) {
-                                         BlockPos blockposition1 = blockposition.above(20 + random.nextInt(15)).east(-10 + random.nextInt(21)).south(-10 + random.nextInt(21));
+                                     if (randomsource.nextInt(j) >= 72000) {
+                                         BlockPos blockposition1 = blockposition.above(20 + randomsource.nextInt(15)).east(-10 + randomsource.nextInt(21)).south(-10 + randomsource.nextInt(21));
 +                                        if (!world.hasChunkAt(blockposition1)) continue; // MultiPaper - don't load chunks when spawning phantoms
                                          BlockState iblockdata = world.getBlockState(blockposition1);
                                          FluidState fluid = world.getFluidState(blockposition1);

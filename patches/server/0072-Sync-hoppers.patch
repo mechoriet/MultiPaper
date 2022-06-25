@@ -5,10 +5,10 @@ Subject: [PATCH] Sync hoppers
 
 
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index dfa77120d0f9dba82d5ba6436b6970bf883e3b26..8ac1dfb14394c659e7fc08af7747ee47007afc1f 100644
+index 4398ca9b53340fbb926f2ca14fc3af9c747bdb1d..9de538478654a3e80133d4e01efc5c683ffc9562 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -38,6 +38,7 @@ import org.bukkit.entity.HumanEntity;
+@@ -37,6 +37,7 @@ import org.bukkit.entity.HumanEntity;
  import org.bukkit.event.inventory.InventoryMoveItemEvent;
  import org.bukkit.event.inventory.InventoryPickupItemEvent;
  import org.bukkit.inventory.Inventory;
@@ -16,7 +16,7 @@ index dfa77120d0f9dba82d5ba6436b6970bf883e3b26..8ac1dfb14394c659e7fc08af7747ee47
  // CraftBukkit end
  
  public class HopperBlockEntity extends RandomizableContainerBlockEntity implements Hopper {
-@@ -252,7 +253,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -251,7 +252,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
                          origItemStack.setCount(origCount - moved + remaining);
                      }
                      hopper.setItem(i, origItemStack);
@@ -25,7 +25,7 @@ index dfa77120d0f9dba82d5ba6436b6970bf883e3b26..8ac1dfb14394c659e7fc08af7747ee47
                      return true;
                  }
                  origItemStack.setCount(origCount);
-@@ -612,6 +613,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -611,6 +612,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
      private static ItemStack tryMoveInItem(@Nullable Container from, Container to, ItemStack stack, int slot, @Nullable Direction side) {
          ItemStack itemstack1 = to.getItem(slot);
@@ -33,7 +33,7 @@ index dfa77120d0f9dba82d5ba6436b6970bf883e3b26..8ac1dfb14394c659e7fc08af7747ee47
  
          if (HopperBlockEntity.canPlaceItemInContainer(to, stack, slot, side)) {
              boolean flag = false;
-@@ -658,6 +660,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -657,6 +659,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
                      }
                  }
  

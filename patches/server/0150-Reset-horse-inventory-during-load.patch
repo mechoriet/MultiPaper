@@ -5,10 +5,10 @@ Subject: [PATCH] Reset horse inventory during load
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java b/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java
-index a726006888bbbdb290bcda3ac4fd45d68ba51b79..f1ba3b8f7dcae1e5de74a55bf452715ccca5c1c6 100644
+index a8da601b8342aa6e4902b452eb588c76c98a7adf..03c56fa59c547a434ac17179680bad5fb196a49c 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/horse/AbstractHorse.java
-@@ -814,6 +814,7 @@ public abstract class AbstractHorse extends Animal implements ContainerListener,
+@@ -817,6 +817,7 @@ public abstract class AbstractHorse extends Animal implements ContainerListener,
      @Override
      public void readAdditionalSaveData(CompoundTag nbt) {
          super.readAdditionalSaveData(nbt);

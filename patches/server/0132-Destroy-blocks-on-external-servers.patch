@@ -5,10 +5,10 @@ Subject: [PATCH] Destroy blocks on external servers
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
-index 415b6c2bbf11c5a2ac75d18f52b93f80b9e14fe4..35c170d445a4650eaa07168692769186a1020020 100644
+index 7572f6d03d315ab4639be211c5ffc7682b326362..03d5db7dfb8d04722312b70e92be3ebb6af9c065 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayerGameMode.java
-@@ -45,6 +45,9 @@ import org.bukkit.event.Event;
+@@ -44,6 +44,9 @@ import org.bukkit.event.Event;
  import org.bukkit.event.block.Action;
  import org.bukkit.event.player.PlayerGameModeChangeEvent;
  import org.bukkit.event.player.PlayerInteractEvent;
@@ -18,20 +18,20 @@ index 415b6c2bbf11c5a2ac75d18f52b93f80b9e14fe4..35c170d445a4650eaa07168692769186
  // CraftBukkit end
  
  public class ServerPlayerGameMode {
-@@ -363,6 +366,12 @@ public class ServerPlayerGameMode {
+@@ -329,6 +332,12 @@ public class ServerPlayerGameMode {
      }
  
-     public void destroyAndAck(BlockPos pos, ServerboundPlayerActionPacket.Action action, String reason) {
+     public void destroyAndAck(BlockPos pos, int sequence, String reason) {
 +        // MultiPaper start
 +        if (MultiPaper.isChunkExternal(this.level.getChunkIfLoaded(pos))) {
-+            this.level.getChunkIfLoaded(pos).externalOwner.getConnection().send(new DestroyAndAckPacket(player, pos, action, reason));
++            this.level.getChunkIfLoaded(pos).externalOwner.getConnection().send(new DestroyAndAckPacket(player, pos, ServerboundPlayerActionPacket.Action.STOP_DESTROY_BLOCK, reason));
 +            return;
 +        }
 +        // MultiPaper end
          if (this.destroyBlock(pos)) {
-             // Paper start - this can cause clients on a lagging server to think they're not currently destroying a block
-             if (com.destroystokyo.paper.PaperConfig.lagCompensateBlockBreaking) {
-@@ -378,6 +387,12 @@ public class ServerPlayerGameMode {
+             this.debugLogging(pos, true, sequence, reason);
+         } else {
+@@ -339,6 +348,12 @@ public class ServerPlayerGameMode {
      }
  
      public boolean destroyBlock(BlockPos pos) {
@@ -46,7 +46,7 @@ index 415b6c2bbf11c5a2ac75d18f52b93f80b9e14fe4..35c170d445a4650eaa07168692769186
          org.bukkit.block.Block bblock = CraftBlock.at(level, pos);
 diff --git a/src/main/java/puregero/multipaper/externalserverprotocol/DestroyAndAckPacket.java b/src/main/java/puregero/multipaper/externalserverprotocol/DestroyAndAckPacket.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..d65445b5e9f013781e718a77bd21817a49d784cb
+index 0000000000000000000000000000000000000000..de3ceaacdbec84679dd7dfa101cf2a70b218b115
 --- /dev/null
 +++ b/src/main/java/puregero/multipaper/externalserverprotocol/DestroyAndAckPacket.java
 @@ -0,0 +1,59 @@
@@ -105,7 +105,7 @@ index 0000000000000000000000000000000000000000..d65445b5e9f013781e718a77bd21817a
 +                return;
 +            }
 +
-+            player.gameMode.destroyAndAck(pos, action, reason);
++            player.gameMode.destroyAndAck(pos, action.ordinal(), reason);
 +        });
 +    }
 +}

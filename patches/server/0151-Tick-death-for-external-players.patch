@@ -5,10 +5,10 @@ Subject: [PATCH] Tick death for external players
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 16ddd38832433f5b45eb00936fb51955904f6201..bc46c7170710cd58b379512c8046f5ba6dc2884b 100644
+index f67674f95f04ab1e194024db61185eb7d3a9d0fd..d8b93642d851790c528c6167ce35b9c9cba3c771 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -621,6 +621,14 @@ public abstract class LivingEntity extends Entity {
+@@ -623,6 +623,14 @@ public abstract class LivingEntity extends Entity {
          return false;
      }
  
@@ -24,7 +24,7 @@ index 16ddd38832433f5b45eb00936fb51955904f6201..bc46c7170710cd58b379512c8046f5ba
          ++this.deathTime;
          if (this.deathTime == 20 && !this.level.isClientSide()) {
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index 5441e68cd976e0a2a0d1bccfd6729bcfdab26eb9..1c8400528851e8fcc1358b41f944e5d02fede5ce 100644
+index 62f9527c343a467f73e8cd0425647cb0d9d3ba4f..898e5a696322156b7aa4dede3a0741d717b534ba 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
 @@ -98,6 +98,8 @@ public class MultiPaper {

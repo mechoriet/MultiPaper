@@ -5,7 +5,7 @@ Subject: [PATCH] Add player syncing between servers
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
-index 17ebc0ac3d4c91d6818c79e8821681b668bd95c6..e0dc397e12c8e1a07e50102f08bb248b42fda6ac 100644
+index df1528135276db420a2a6e375c0cd2270b248bf6..32bb34d14d009a6028bb4734ab3a9de623f09b43 100644
 --- a/src/main/java/com/destroystokyo/paper/Metrics.java
 +++ b/src/main/java/com/destroystokyo/paper/Metrics.java
 @@ -603,7 +603,7 @@ public class Metrics {
@@ -18,10 +18,10 @@ index 17ebc0ac3d4c91d6818c79e8821681b668bd95c6..e0dc397e12c8e1a07e50102f08bb248b
                  metrics.addCustomChart(new Metrics.SimplePie("multipaper_version", () -> (Metrics.class.getPackage().getImplementationVersion() != null) ? Metrics.class.getPackage().getImplementationVersion() : "unknown")); // Tuinity - we have our own bstats page // Airplane // MultiPaper
                  metrics.addCustomChart(new Metrics.SimplePie("total_servers", () -> String.valueOf(MultiPaper.getConnection().getServersMap().values().stream().filter(ExternalServer::isAlive).count()))); // MultiPaper
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index 6cfbe844ac8603ef937714370b8ea3d0e6687ef4..6e8782ed12bbb0f7b5027d8a41f4ee0e1ee69cd7 100644
+index 059d7eda8b42f14ceb8945d82b2c917a13f4fd46..eacf741f0a30bba8dabbbaa6b0e3507735500e64 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
-@@ -53,6 +53,8 @@ import org.slf4j.MarkerFactory;
+@@ -52,6 +52,8 @@ import org.slf4j.MarkerFactory;
  
  
  import io.netty.util.concurrent.AbstractEventExecutor; // Paper
@@ -30,7 +30,7 @@ index 6cfbe844ac8603ef937714370b8ea3d0e6687ef4..6e8782ed12bbb0f7b5027d8a41f4ee0e
  public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
  
      private static final float AVERAGE_PACKETS_SMOOTHING = 0.75F;
-@@ -612,6 +614,9 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -613,6 +615,9 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          this.preparing = false;
          clearPacketQueue(); // Paper
          // Spigot End
@@ -41,23 +41,23 @@ index 6cfbe844ac8603ef937714370b8ea3d0e6687ef4..6e8782ed12bbb0f7b5027d8a41f4ee0e
              this.channel.close(); // We can't wait as this may be called from an event loop.
              this.disconnectedReason = disconnectReason;
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index f86b3e895e820e1f5d82779ec892496e71ba65b1..f0e430eae1853d4c35dc0e84edd031667ba1e529 100644
+index a35423853164c2f34169e10e5ee7da2ca27e71b1..32dffbcf1943c000d0e8927caab3a4aef9027eec 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1479,6 +1479,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1437,6 +1437,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              }
          }
  
 +        MultiPaper.tick(); // MultiPaper
 +
          // Paper start - incremental chunk and player saving
-         int playerSaveInterval = com.destroystokyo.paper.PaperConfig.playerAutoSaveRate;
+         int playerSaveInterval = io.papermc.paper.configuration.GlobalConfiguration.get().playerAutoSave.rate;
          if (playerSaveInterval < 0) {
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index a6edf5117d4ae03d8294e7bb74dd2d77048895a5..bcccddb2f65ec79bdc99e7aa9a6b59736212f3ac 100644
+index 353463084d90eb684717e65c56da52cd25a1e375..ad6798934ed30dafadefff93a6dd5a6c00acb884 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -6,14 +6,8 @@ import com.mojang.authlib.GameProfile;
+@@ -6,12 +6,8 @@ import com.mojang.authlib.GameProfile;
  import com.mojang.datafixers.util.Either;
  import com.mojang.logging.LogUtils;
  import com.mojang.serialization.DataResult;
@@ -67,14 +67,12 @@ index a6edf5117d4ae03d8294e7bb74dd2d77048895a5..bcccddb2f65ec79bdc99e7aa9a6b5973
 -import java.util.Objects;
 -import java.util.Optional;
 -import java.util.OptionalInt;
--import java.util.Random;
--import java.util.UUID;
 +
 +import java.util.*;
  import javax.annotation.Nullable;
  import net.minecraft.BlockUtil;
  import net.minecraft.ChatFormatting;
-@@ -165,6 +159,12 @@ import org.bukkit.event.player.PlayerPortalEvent;
+@@ -172,6 +168,12 @@ import org.bukkit.event.player.PlayerPortalEvent;
  import org.bukkit.event.player.PlayerTeleportEvent;
  import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
  import org.bukkit.inventory.MainHand;
@@ -87,7 +85,7 @@ index a6edf5117d4ae03d8294e7bb74dd2d77048895a5..bcccddb2f65ec79bdc99e7aa9a6b5973
  // CraftBukkit end
  
  public class ServerPlayer extends Player {
-@@ -218,12 +218,14 @@ public class ServerPlayer extends Player {
+@@ -225,12 +227,14 @@ public class ServerPlayer extends Player {
      private final TextFilter textFilter;
      private boolean textFilteringEnabled;
      private boolean allowsListing;
@@ -103,7 +101,7 @@ index a6edf5117d4ae03d8294e7bb74dd2d77048895a5..bcccddb2f65ec79bdc99e7aa9a6b5973
      public long loginTime; // Paper
      public int patrolSpawnDelay; // Paper - per player patrol spawns
      // Paper start - cancellable death event
-@@ -1180,6 +1182,26 @@ public class ServerPlayer extends Player {
+@@ -1189,6 +1193,26 @@ public class ServerPlayer extends Player {
              }
              // Paper end
  
@@ -130,7 +128,7 @@ index a6edf5117d4ae03d8294e7bb74dd2d77048895a5..bcccddb2f65ec79bdc99e7aa9a6b5973
              return this;
          }
      }
-@@ -1840,6 +1862,8 @@ public class ServerPlayer extends Player {
+@@ -1848,6 +1872,8 @@ public class ServerPlayer extends Player {
                  this.setCamera(this);
              }
  
@@ -140,10 +138,10 @@ index a6edf5117d4ae03d8294e7bb74dd2d77048895a5..bcccddb2f65ec79bdc99e7aa9a6b5973
              this.updateEffectVisibility();
              return event; // Paper
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index f98c6804ef8ec33551857606800295712f2e9057..143dbd5d877a65c6a3492f0f1d2fdb798a76d791 100644
+index 60373551c49386652de286127636b61f31e88527..b96107e048deadbacaa3dd031e63edf7a8e5bc09 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -23,6 +23,8 @@ import java.util.function.UnaryOperator;
+@@ -30,6 +30,8 @@ import java.util.function.UnaryOperator;
  import java.util.stream.Collectors;
  import java.util.stream.Stream;
  import javax.annotation.Nullable;
@@ -152,7 +150,7 @@ index f98c6804ef8ec33551857606800295712f2e9057..143dbd5d877a65c6a3492f0f1d2fdb79
  import net.minecraft.ChatFormatting;
  import net.minecraft.CrashReport;
  import net.minecraft.CrashReportCategory;
-@@ -143,7 +145,6 @@ import net.minecraft.world.level.block.entity.CommandBlockEntity;
+@@ -159,7 +161,6 @@ import net.minecraft.world.level.block.entity.CommandBlockEntity;
  import net.minecraft.world.level.block.entity.JigsawBlockEntity;
  import net.minecraft.world.level.block.entity.SignBlockEntity;
  import net.minecraft.world.level.block.entity.StructureBlockEntity;
@@ -160,7 +158,7 @@ index f98c6804ef8ec33551857606800295712f2e9057..143dbd5d877a65c6a3492f0f1d2fdb79
  import net.minecraft.world.level.block.state.BlockState;
  import net.minecraft.world.phys.AABB;
  import net.minecraft.world.phys.BlockHitResult;
-@@ -177,7 +178,6 @@ import org.bukkit.Location;
+@@ -192,7 +193,6 @@ import org.bukkit.Location;
  import org.bukkit.craftbukkit.entity.CraftPlayer;
  import org.bukkit.craftbukkit.event.CraftEventFactory;
  import org.bukkit.craftbukkit.inventory.CraftItemStack;
@@ -168,25 +166,25 @@ index f98c6804ef8ec33551857606800295712f2e9057..143dbd5d877a65c6a3492f0f1d2fdb79
  import org.bukkit.craftbukkit.util.CraftMagicNumbers;
  import org.bukkit.craftbukkit.util.LazyPlayerSet;
  import org.bukkit.craftbukkit.util.Waitable;
-@@ -194,7 +194,6 @@ import org.bukkit.event.inventory.InventoryCreativeEvent;
+@@ -209,7 +209,6 @@ import org.bukkit.event.inventory.InventoryCreativeEvent;
  import org.bukkit.event.inventory.InventoryType.SlotType;
  import org.bukkit.event.inventory.SmithItemEvent;
  import org.bukkit.event.player.AsyncPlayerChatEvent;
 -import org.bukkit.event.player.PlayerAnimationEvent;
+ import org.bukkit.event.player.PlayerAnimationType;
  import org.bukkit.event.player.PlayerChatEvent;
  import org.bukkit.event.player.PlayerCommandPreprocessEvent;
- import org.bukkit.event.player.PlayerInteractAtEntityEvent;
-@@ -213,6 +212,9 @@ import org.bukkit.inventory.EquipmentSlot;
+@@ -228,6 +227,9 @@ import org.bukkit.inventory.CraftingInventory;
+ import org.bukkit.inventory.EquipmentSlot;
  import org.bukkit.inventory.InventoryView;
  import org.bukkit.inventory.SmithingInventory;
- import co.aikar.timings.MinecraftTimings; // Paper
 +import puregero.multipaper.ExternalPlayer;
 +import puregero.multipaper.MultiPaper;
 +import puregero.multipaper.externalserverprotocol.PlayerRemovePacket;
  // CraftBukkit end
  
  public class ServerGamePacketListenerImpl implements ServerPlayerConnection, ServerGamePacketListener {
-@@ -439,7 +441,8 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -466,7 +468,8 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
  
          PlayerKickEvent event = new PlayerKickEvent(this.player.getBukkitEntity(), reason, leaveMessage, cause); // Paper - Adventure & kick event reason
  
@@ -196,7 +194,7 @@ index f98c6804ef8ec33551857606800295712f2e9057..143dbd5d877a65c6a3492f0f1d2fdb79
              this.cserver.getPluginManager().callEvent(event);
          }
  
-@@ -452,6 +455,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -479,6 +482,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
          // CraftBukkit end
  
          this.player.quitReason = org.bukkit.event.player.PlayerQuitEvent.QuitReason.KICKED; // Paper
@@ -204,17 +202,17 @@ index f98c6804ef8ec33551857606800295712f2e9057..143dbd5d877a65c6a3492f0f1d2fdb79
          this.connection.send(new ClientboundDisconnectPacket(ichatbasecomponent), (future) -> {
              this.connection.disconnect(ichatbasecomponent);
          });
-@@ -2009,7 +2013,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -2028,7 +2032,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
          this.player.disconnect();
          // Paper start - Adventure
          quitMessage = quitMessage == null ? this.server.getPlayerList().remove(this.player) : this.server.getPlayerList().remove(this.player, quitMessage); // Paper - pass in quitMessage to fix kick message not being used
 -        if ((quitMessage != null) && !quitMessage.equals(net.kyori.adventure.text.Component.empty())) {
 +        if ((quitMessage != null) && !quitMessage.equals(net.kyori.adventure.text.Component.empty()) && MultiPaper.isRealPlayer(this.player)) { // MultiPaper - Only run for real players
-             this.server.getPlayerList().broadcastMessage(PaperAdventure.asVanilla(quitMessage), ChatType.SYSTEM, Util.NIL_UUID);
+             this.server.getPlayerList().broadcastSystemMessage(PaperAdventure.asVanilla(quitMessage), ChatType.SYSTEM);
              // Paper end
          }
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 624946f48f0811c94d05174f28d0b1fc6d5e6a00..757038c2f480c392abae9401906700907d2e4cd1 100644
+index 20cdfdb3b9351f74e89bc45b3ab972384165659a..de9ef4bc5b9f7709cab22a3577894c530822ef45 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -14,14 +14,7 @@ import java.io.File;
@@ -233,15 +231,15 @@ index 624946f48f0811c94d05174f28d0b1fc6d5e6a00..757038c2f480c392abae940190670090
  import java.util.function.Function;
  import javax.annotation.Nullable;
  import net.minecraft.ChatFormatting;
-@@ -35,6 +28,7 @@ import net.minecraft.network.Connection;
- import net.minecraft.network.FriendlyByteBuf;
- import net.minecraft.network.chat.ChatType;
- import net.minecraft.network.chat.Component;
-+import net.minecraft.network.chat.TextComponent;
- import net.minecraft.network.chat.TranslatableComponent;
+@@ -42,6 +35,7 @@ import net.minecraft.network.chat.PlayerChatMessage;
  import net.minecraft.network.protocol.Packet;
  import net.minecraft.network.protocol.game.ClientboundChangeDifficultyPacket;
-@@ -118,6 +112,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
+ import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
++import net.minecraft.network.protocol.game.ClientboundDisconnectPacket;
+ import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
+ import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
+ import net.minecraft.network.protocol.game.ClientboundInitializeBorderPacket;
+@@ -120,6 +114,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
  import org.bukkit.event.player.PlayerLoginEvent;
  import org.bukkit.event.player.PlayerQuitEvent;
  import org.bukkit.event.player.PlayerRespawnEvent;
@@ -255,13 +253,13 @@ index 624946f48f0811c94d05174f28d0b1fc6d5e6a00..757038c2f480c392abae940190670090
  // CraftBukkit end
  
  public abstract class PlayerList {
-@@ -189,6 +190,22 @@ public abstract class PlayerList {
+@@ -191,6 +192,22 @@ public abstract class PlayerList {
          Optional<GameProfile> optional = usercache.get(gameprofile.getId());
          String s = (String) optional.map(GameProfile::getName).orElse(gameprofile.getName());
  
 +        // MultiPaper start
 +        if (!MultiPaper.sendPlayerConnect(player).join()) {
-+            TextComponent chatmessage = new TextComponent("You are already logged into another server.");
++            MutableComponent chatmessage = Component.literal("You are already logged into another server.");
 +            connection.send(new ClientboundDisconnectPacket(chatmessage));
 +            connection.disconnect(chatmessage);
 +            pendingPlayers.remove(player.getUUID(), player);
@@ -278,7 +276,7 @@ index 624946f48f0811c94d05174f28d0b1fc6d5e6a00..757038c2f480c392abae940190670090
          usercache.add(gameprofile);
          CompoundTag nbttagcompound = this.load(player);
          ResourceKey resourcekey;
-@@ -326,8 +343,10 @@ public abstract class PlayerList {
+@@ -328,8 +345,10 @@ public abstract class PlayerList {
      private void postChunkLoadJoin(ServerPlayer player, ServerLevel worldserver1, Connection networkmanager, ServerGamePacketListenerImpl playerconnection, CompoundTag nbttagcompound, String s1, String s) {
          pendingPlayers.remove(player.getUUID(), player);
          if (!networkmanager.isConnected()) {
@@ -288,8 +286,8 @@ index 624946f48f0811c94d05174f28d0b1fc6d5e6a00..757038c2f480c392abae940190670090
 +        MultiPaper.onPlayerJoin(player); // MultiPaper
          player.didPlayerJoinEvent = true;
          // Paper end
-         TranslatableComponent chatmessage;
-@@ -614,10 +633,10 @@ public abstract class PlayerList {
+         MutableComponent ichatmutablecomponent;
+@@ -617,10 +636,10 @@ public abstract class PlayerList {
          }
  
          PlayerQuitEvent playerQuitEvent = new PlayerQuitEvent(entityplayer.getBukkitEntity(), leaveMessage, entityplayer.quitReason); // Paper - quit reason
@@ -302,7 +300,7 @@ index 624946f48f0811c94d05174f28d0b1fc6d5e6a00..757038c2f480c392abae940190670090
          // CraftBukkit end
  
          // Paper start - Remove from collideRule team if needed
-@@ -699,6 +718,8 @@ public abstract class PlayerList {
+@@ -702,6 +721,8 @@ public abstract class PlayerList {
          this.cserver.getScoreboardManager().removePlayer(entityplayer.getBukkitEntity());
          // CraftBukkit end
  
@@ -311,7 +309,7 @@ index 624946f48f0811c94d05174f28d0b1fc6d5e6a00..757038c2f480c392abae940190670090
          return entityplayer.didPlayerJoinEvent ? playerQuitEvent.quitMessage() : null; // CraftBukkit // Paper - Adventure // Paper - don't print quit if we never printed join
      }
  
-@@ -828,6 +849,12 @@ public abstract class PlayerList {
+@@ -831,6 +852,12 @@ public abstract class PlayerList {
  
      public ServerPlayer respawn(ServerPlayer entityplayer, ServerLevel worldserver, boolean flag, Location location, boolean avoidSuffocation, org.bukkit.event.player.PlayerRespawnEvent.RespawnFlag...respawnFlags) {
          // Paper end
@@ -324,7 +322,7 @@ index 624946f48f0811c94d05174f28d0b1fc6d5e6a00..757038c2f480c392abae940190670090
          entityplayer.stopRiding(); // CraftBukkit
          this.players.remove(entityplayer);
          this.playersByName.remove(entityplayer.getScoreboardName().toLowerCase(java.util.Locale.ROOT)); // Spigot
-@@ -1005,6 +1032,26 @@ public abstract class PlayerList {
+@@ -1008,6 +1035,26 @@ public abstract class PlayerList {
          // Paper end
  
          // CraftBukkit end
@@ -351,7 +349,7 @@ index 624946f48f0811c94d05174f28d0b1fc6d5e6a00..757038c2f480c392abae940190670090
          return entityplayer1;
      }
  
-@@ -1015,6 +1062,20 @@ public abstract class PlayerList {
+@@ -1018,6 +1065,20 @@ public abstract class PlayerList {
          this.sendPlayerPermissionLevel(player, i);
      }
  
@@ -374,7 +372,7 @@ index 624946f48f0811c94d05174f28d0b1fc6d5e6a00..757038c2f480c392abae940190670090
              // CraftBukkit start
 diff --git a/src/main/java/puregero/multipaper/ExternalPlayer.java b/src/main/java/puregero/multipaper/ExternalPlayer.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..d89fe348e38d98197c97f09264a3417c873d969a
+index 0000000000000000000000000000000000000000..5708a74f17ea1f1f5d74b4fc610e5cdf0ee7545a
 --- /dev/null
 +++ b/src/main/java/puregero/multipaper/ExternalPlayer.java
 @@ -0,0 +1,87 @@
@@ -412,7 +410,7 @@ index 0000000000000000000000000000000000000000..d89fe348e38d98197c97f09264a3417c
 +    }
 +
 +    public ExternalPlayer(ExternalServerConnection externalServerConnection, String name, UUID uuid, String world, double x, double y, double z, float yaw, float pitch, GameType gamemode, InetSocketAddress address) {
-+        super(((CraftServer) Bukkit.getServer()).getServer(), ((CraftWorld) Bukkit.getWorld(world)).getHandle(), new GameProfile(uuid, name));
++        super(((CraftServer) Bukkit.getServer()).getServer(), ((CraftWorld) Bukkit.getWorld(world)).getHandle(), new GameProfile(uuid, name),null);
 +        this.externalServerConnection = externalServerConnection;
 +        this.address = address;
 +        this.isRealPlayer = true;
@@ -497,7 +495,7 @@ index 60bb4c2da01b07dee539c2a260d2c5e02c110988..9f7ce7885f2fde34ffe4b387b0685231
  
      public Channel getChannel() {
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index 7cd6e0c934944b92852f650736bfaf718f78c499..206f3b6a58755b3fea6b607c346c574cc175fc39 100644
+index 7cd6e0c934944b92852f650736bfaf718f78c499..14af2dcebc2ea0e031d3751f41edfb3e3c0f5b79 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
 @@ -2,9 +2,16 @@ package puregero.multipaper;
@@ -535,7 +533,7 @@ index 7cd6e0c934944b92852f650736bfaf718f78c499..206f3b6a58755b3fea6b607c346c574c
 +                // Copied from Paper start - Configurable container update tick rate
 +                if (externalPlayer.containerMenu != externalPlayer.inventoryMenu && --externalPlayer.containerUpdateDelay <= 0) {
 +                    externalPlayer.containerMenu.broadcastChanges();
-+                    externalPlayer.containerUpdateDelay = externalPlayer.level.paperConfig.containerUpdateTickRate;
++                    externalPlayer.containerUpdateDelay = externalPlayer.level.paperConfig().tickRates.containerUpdate;
 +                }
 +                // Copied from Paper end
 +            }

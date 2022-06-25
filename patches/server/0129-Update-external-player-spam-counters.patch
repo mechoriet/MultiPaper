@@ -5,10 +5,10 @@ Subject: [PATCH] Update external player spam counters
 
 
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 88f49ddad6a4b818dcde5df32f14b3a4a0d7ab71..46cf528c2d1a4365a3aa307f5b5af5f63865d8a6 100644
+index 6c4143be21cdb9cc6a4cb20de5bdec06c3068c76..6bfc10236ad8ce288ac2a50eb41df7355f83486a 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -373,20 +373,23 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -399,20 +399,23 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
          // Paper end
  
          this.server.getProfiler().pop();
@@ -46,7 +46,7 @@ index 88f49ddad6a4b818dcde5df32f14b3a4a0d7ab71..46cf528c2d1a4365a3aa307f5b5af5f6
  
          if (this.player.getLastActionTime() > 0L && this.server.getPlayerIdleTimeout() > 0 && Util.getMillis() - this.player.getLastActionTime() > (long) (this.server.getPlayerIdleTimeout() * 1000 * 60) && !this.player.wonGame) { // Paper - Prevent AFK kick while watching end credits.
              this.player.resetLastActionTime(); // CraftBukkit - SPIGOT-854
-@@ -404,6 +407,25 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -431,6 +434,25 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
          this.lastGoodZ = this.player.getZ();
      }
  
@@ -73,7 +73,7 @@ index 88f49ddad6a4b818dcde5df32f14b3a4a0d7ab71..46cf528c2d1a4365a3aa307f5b5af5f6
      public Connection getConnection() {
          return this.connection;
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index 6b3f947cb1843d9c9c3fdc1fbe78986278edf038..62e9bdd3e2a35c46c80a6a89abbb4639049a5506 100644
+index dbc0ed2a8d91c266cb13decd5cef20307cd04f5c..62f9527c343a467f73e8cd0425647cb0d9d3ba4f 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
 @@ -101,6 +101,8 @@ public class MultiPaper {

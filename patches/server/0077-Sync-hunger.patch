@@ -54,10 +54,10 @@ index 2934b6de1f1fb914a532ee20184df99d1acd8e65..386e34ab182f2966cd1570160707c1ee
  
      public void setExhaustion(float exhaustion) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-index e7108dd70f1eb91f38e04ad71e595bc679560f75..204a3481624cc0d03a7dc6e7093cf98c8a695258 100644
+index 6149e74262ca6c4c00686a89c273c59bfaac3e05..e7469237a3cfb3b3823cbd0a02d002d7314ad008 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-@@ -62,6 +62,8 @@ import org.bukkit.permissions.Permission;
+@@ -63,6 +63,8 @@ import org.bukkit.permissions.Permission;
  import org.bukkit.permissions.PermissionAttachment;
  import org.bukkit.permissions.PermissionAttachmentInfo;
  import org.bukkit.plugin.Plugin;
@@ -66,7 +66,7 @@ index e7108dd70f1eb91f38e04ad71e595bc679560f75..204a3481624cc0d03a7dc6e7093cf98c
  
  public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
      private CraftInventoryPlayer inventory;
-@@ -737,6 +739,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+@@ -738,6 +740,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
      @Override
      public void setSaturation(float value) {
          this.getHandle().getFoodData().saturationLevel = value;
@@ -74,7 +74,7 @@ index e7108dd70f1eb91f38e04ad71e595bc679560f75..204a3481624cc0d03a7dc6e7093cf98c
      }
  
      @Override
-@@ -747,6 +750,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+@@ -748,6 +751,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
      @Override
      public void setFoodLevel(int value) {
          this.getHandle().getFoodData().foodLevel = value;

@@ -5,10 +5,10 @@ Subject: [PATCH] Sync spawn pos
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 59e2c462afe9ec26295c1223735d6e67a9c815cb..11bc8f49f0db42f5f03b0a31d9bfefa6eb635a4d 100644
+index c2cc20e56f43537e9c9c1c514fc1385883b0ffea..5381df2869c03b6f3b02b69b82da61995f1bb8c8 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -168,6 +168,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList; // Paper
+@@ -175,6 +175,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList; // Paper
  import puregero.multipaper.MultiPaper;
  import puregero.multipaper.MultiPaperChunkHandler;
  import puregero.multipaper.MultiPaperEntitiesHandler;
@@ -16,9 +16,9 @@ index 59e2c462afe9ec26295c1223735d6e67a9c815cb..11bc8f49f0db42f5f03b0a31d9bfefa6
  import puregero.multipaper.externalserverprotocol.TimeUpdatePacket;
  
  public class ServerLevel extends Level implements WorldGenLevel {
-@@ -1972,6 +1973,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
-             this.removeTicketsForSpawn(this.paperConfig.keepLoadedRange, prevSpawn);
-             this.addTicketsForSpawn(this.paperConfig.keepLoadedRange, pos);
+@@ -2067,6 +2068,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+             this.removeTicketsForSpawn(this.paperConfig().spawn.keepSpawnLoadedRange * 16, prevSpawn);
+             this.addTicketsForSpawn(this.paperConfig().spawn.keepSpawnLoadedRange * 16, pos);
          }
 +        if (!SpawnUpdatePacket.updatingSpawn) MultiPaper.broadcastPacketToExternalServers(getWorld().getName(), new SpawnUpdatePacket(this));
          this.getServer().getPlayerList().broadcastAll(new ClientboundSetDefaultSpawnPositionPacket(pos, angle));

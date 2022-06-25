@@ -5,10 +5,10 @@ Subject: [PATCH] Save Bukkit MapCanvas'
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/map/CraftMapCanvas.java b/src/main/java/org/bukkit/craftbukkit/map/CraftMapCanvas.java
-index 780ed4469de4443b59671fa4ab675a6f2b154d96..f4d7c32692b204a4e92164ee589e26fb6af31892 100644
+index 01e4897e623ace1b18a4dc8559bb178ab0643cfc..7323a4018da98124de41dc396111e659242ce3a7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/map/CraftMapCanvas.java
 +++ b/src/main/java/org/bukkit/craftbukkit/map/CraftMapCanvas.java
-@@ -41,6 +41,7 @@ public class CraftMapCanvas implements MapCanvas {
+@@ -57,6 +57,7 @@ public class CraftMapCanvas implements MapCanvas {
              return;
          if (this.buffer[y * 128 + x] != color) {
              this.buffer[y * 128 + x] = color;

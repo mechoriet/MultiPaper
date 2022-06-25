@@ -5,10 +5,10 @@ Subject: [PATCH] add chunks/memory/entities to servers commnad
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 1813d0284a2e0400a7551cc5520e333d4ed33ade..1d0b5592a096a9116d2f1c5639a05e9d9c55f0f6 100644
+index 8d2b74a75d0ce130d76dd8c4ccdbbd3ee8440112..5f4c01aa02766dc736fb05a2d3df45ff46b88769 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1534,6 +1534,17 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1492,6 +1492,17 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          tickTimes60s.add(this.tickCount, l);
          // Paper end
  
@@ -72,7 +72,7 @@ index ceaad2b5af855905ad1b87e7308fb354304819b1..874cec1b56060cbe3afd7923fc00b4a9
          this.connection = connection;
      }
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index 1c8400528851e8fcc1358b41f944e5d02fede5ce..3a5218614eb0ae3f20da6455f499a7daedc40a71 100644
+index 898e5a696322156b7aa4dede3a0741d717b534ba..929c886396b6d33fb5c1854cdc8ce312931b4c64 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
 @@ -182,6 +182,10 @@ public class MultiPaper {
