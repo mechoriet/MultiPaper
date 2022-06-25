@@ -73,10 +73,10 @@ index 6c4143be21cdb9cc6a4cb20de5bdec06c3068c76..6bfc10236ad8ce288ac2a50eb41df735
      public Connection getConnection() {
          return this.connection;
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index dbc0ed2a8d91c266cb13decd5cef20307cd04f5c..62f9527c343a467f73e8cd0425647cb0d9d3ba4f 100644
+index c89c13d48c4fe98ef29fa676956f146a991925f6..0a6d755268269a33d6d2360b5898573cd0657ffe 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
-@@ -101,6 +101,8 @@ public class MultiPaper {
+@@ -99,6 +99,8 @@ public class MultiPaper {
              }
  
              player.syncExperience();

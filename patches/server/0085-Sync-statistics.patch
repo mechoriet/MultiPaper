@@ -25,7 +25,7 @@ index 6eff3bdab7ce445b703b983ddbebac0470559a53..6d8c431c115458a5d0f6bd5151e12f3d
      }
  
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index 7010e99573c7cd3d5b79682aacf688e390ca57bc..efa369431403c4c86f740cee75e5a41a8e0b6230 100644
+index 532ed510ddd0f2b423da79abbbef3e21e5f73840..40a5131518f641f52d20351e3a5e6a2e32a2282b 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
 @@ -71,6 +71,7 @@ public class MultiPaper {
@@ -36,7 +36,7 @@ index 7010e99573c7cd3d5b79682aacf688e390ca57bc..efa369431403c4c86f740cee75e5a41a
  
      public static MultiPaperConnection getConnection() {
          if (multiPaperConnection == null) {
-@@ -155,6 +156,14 @@ public class MultiPaper {
+@@ -153,6 +154,14 @@ public class MultiPaper {
          }
  
          MultiPaperExternalBlocksHandler.tick();

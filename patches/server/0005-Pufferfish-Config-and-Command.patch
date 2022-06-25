@@ -5,10 +5,10 @@ Subject: [PATCH] Pufferfish Config and Command
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 02d35358ba6aa1abfb44871fa725e2c57ca00dbc..2420e733bb98b07ae2615d7facc571974427ac52 100644
+index d0ce872a66a56b81f4028b5f829c5ce016f5b099..e3c08bde3270726de14ba67c23ec04e052b2c0fc 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -44,6 +44,13 @@ dependencies {
+@@ -47,6 +47,13 @@ dependencies {
      runtimeOnly("org.apache.maven.resolver:maven-resolver-connector-basic:1.7.3")
      runtimeOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.7.3")
  

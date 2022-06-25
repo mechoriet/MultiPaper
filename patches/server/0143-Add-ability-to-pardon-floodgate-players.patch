@@ -4,6 +4,26 @@ Date: Fri, 18 Mar 2022 01:43:33 +1000
 Subject: [PATCH] Add ability to pardon floodgate players
 
 
+diff --git a/src/main/java/net/minecraft/commands/synchronization/ArgumentTypeInfos.java b/src/main/java/net/minecraft/commands/synchronization/ArgumentTypeInfos.java
+index 909a95d279ebb4727111d3bd6bc0f9faca7c69f2..92efea784c3cdc901af40851bdf690d4891038e8 100644
+--- a/src/main/java/net/minecraft/commands/synchronization/ArgumentTypeInfos.java
++++ b/src/main/java/net/minecraft/commands/synchronization/ArgumentTypeInfos.java
+@@ -59,6 +59,7 @@ import net.minecraft.commands.synchronization.brigadier.StringArgumentSerializer
+ import net.minecraft.core.Registry;
+ import net.minecraft.gametest.framework.TestClassNameArgument;
+ import net.minecraft.gametest.framework.TestFunctionArgument;
++import net.minecraft.server.commands.PardonCommand;
+ 
+ public class ArgumentTypeInfos {
+     private static final Map<Class<?>, ArgumentTypeInfo<?, ?>> BY_CLASS = Maps.newHashMap();
+@@ -77,6 +78,7 @@ public class ArgumentTypeInfos {
+         register(registry, "brigadier:string", StringArgumentType.class, new StringArgumentSerializer());
+         register(registry, "entity", EntityArgument.class, new EntityArgument.Info());
+         register(registry, "game_profile", GameProfileArgument.class, SingletonArgumentInfo.contextFree(GameProfileArgument::gameProfile));
++        BY_CLASS.put(PardonCommand.BanListGameProfileArgument.class, BY_CLASS.get(GameProfileArgument.class)); // MultiPaper - Add our own GameProfileArgument implementation
+         register(registry, "block_pos", BlockPosArgument.class, SingletonArgumentInfo.contextFree(BlockPosArgument::blockPos));
+         register(registry, "column_pos", ColumnPosArgument.class, SingletonArgumentInfo.contextFree(ColumnPosArgument::columnPos));
+         register(registry, "vec3", Vec3Argument.class, SingletonArgumentInfo.contextFree(Vec3Argument::vec3));
 diff --git a/src/main/java/net/minecraft/server/commands/PardonCommand.java b/src/main/java/net/minecraft/server/commands/PardonCommand.java
 index f1605ec163f6d178df1b8203ff16fbe97cd53475..900d8b6b1b55b0e0f4ea833a0b3f6f4380133598 100644
 --- a/src/main/java/net/minecraft/server/commands/PardonCommand.java

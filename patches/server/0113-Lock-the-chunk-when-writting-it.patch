@@ -17,10 +17,10 @@ index 92a978ca9b0dc8589767d519f76d92627dc92e95..805006d490ec377390b39c00468ed558
              asyncSaveData, chunk);
  
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index 6cfe1c005edf176b2194891b8d813b99d20b3fe9..dbc0ed2a8d91c266cb13decd5cef20307cd04f5c 100644
+index b3b5236a04a3f23699e408064c0fd0c29099d0cb..c89c13d48c4fe98ef29fa676956f146a991925f6 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
-@@ -515,6 +515,10 @@ public class MultiPaper {
+@@ -513,6 +513,10 @@ public class MultiPaper {
          chunk.hasExternalLockRequest = false;
      }
  

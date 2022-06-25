@@ -5,10 +5,10 @@ Subject: [PATCH] Add generic file syncing between servers
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 9a90773511c414ca7d3fd485b45d972a7423ac9f..61f777c26f6e9ab9fead8d93a9b6d15ed02ba350 100644
+index ad00a06a2728b925fc4665322021272b8595cd18..96b9ba4f57fa6192377c326b2d8d839db2f4a44b 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -53,6 +53,8 @@ dependencies {
+@@ -56,6 +56,8 @@ dependencies {
      }
      // Pufferfish end
  

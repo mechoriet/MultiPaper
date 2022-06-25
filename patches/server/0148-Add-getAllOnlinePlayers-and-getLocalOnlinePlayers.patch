@@ -183,19 +183,6 @@ index e64d7e185ec98640b6af6618a0f629ca248b592e..cd56f0189c4e56daa21ad1c8fbdbc489
                  player.spigot().sendMessage(components);
              }
          }
-diff --git a/src/main/java/puregero/multipaper/MultiPaperPermissionSyncer.java b/src/main/java/puregero/multipaper/MultiPaperPermissionSyncer.java
-index eb4d44ea8fc2056c756fa1f367db5e03b8a7d5f8..55f02552e91ffd38fff9f3c7de60510554271b38 100644
---- a/src/main/java/puregero/multipaper/MultiPaperPermissionSyncer.java
-+++ b/src/main/java/puregero/multipaper/MultiPaperPermissionSyncer.java
-@@ -20,7 +20,7 @@ public class MultiPaperPermissionSyncer {
-     }
- 
-     public static void sync() {
--        for (Player player : Bukkit.getOnlinePlayers()) {
-+        for (Player player : Bukkit.getAllOnlinePlayers()) {
-             syncers.computeIfAbsent(player, MultiPaperPermissionSyncer::new);
-         }
- 
 diff --git a/src/main/java/puregero/multipaper/commands/SListCommand.java b/src/main/java/puregero/multipaper/commands/SListCommand.java
 index 2b9d8875353e9353929d85ec528eee31bfdd3e03..474bc0197f440b96344ec4796dec24a8477d35c6 100644
 --- a/src/main/java/puregero/multipaper/commands/SListCommand.java

@@ -5,13 +5,13 @@ Subject: [PATCH] Tick takexpdelay on external players
 
 
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index 92ebdedae7601cc6d324d606cbc961da2303e71d..7917dd398db79926570885d92bd8503dd2a163c9 100644
+index 30faffbd0b452f03618d6f5f251132ef9e950a99..871fd84ebbc2ce5bad5ffe34179b5152dcd217b3 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
-@@ -94,6 +94,10 @@ public class MultiPaper {
-                 externalPlayer.checkInsideBlocks();
+@@ -92,6 +92,10 @@ public class MultiPaper {
+                 // Copied from Paper end
  
-                 externalPlayer.tickAttackStrength();
+                 externalPlayer.checkInsideBlocks();
 +
 +                if (player.takeXpDelay > 0) {
 +                    --player.takeXpDelay;

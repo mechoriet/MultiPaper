@@ -5,7 +5,7 @@ Subject: [PATCH] Add MultiPaperConnection
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 3fe8e1d35bf21ec2d28bf90e63bb013481b25d34..f4c50397dfdd9614b160df59794aa81452146077 100644
+index 2767481a39a614468c0edb34f5f43038dff6b28b..7c09c2ae0a0b15a5a343f78508eab4e0e5bc2101 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -9,6 +9,7 @@ plugins {
@@ -14,8 +14,8 @@ index 3fe8e1d35bf21ec2d28bf90e63bb013481b25d34..f4c50397dfdd9614b160df59794aa814
  dependencies {
 +    implementation(project(":MultiPaper-MasterMessagingProtocol")) // MultiPaper
      implementation(project(":MultiPaper-API")) // MultiPaper // Airplane // Paper
-     implementation("io.papermc.paper:paper-mojangapi:1.18-R0.1-SNAPSHOT") // Airplane
-     // Paper start
+     // Airplane start
+     implementation("io.papermc.paper:paper-mojangapi:1.19-R0.1-SNAPSHOT") {
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
 index 1a11b9110ac9e5936ccd415b963b5ce34ecf91d6..05407084ac97115d0e23bb49d5c4e576cc661f3c 100644
 --- a/src/main/java/net/minecraft/server/Main.java

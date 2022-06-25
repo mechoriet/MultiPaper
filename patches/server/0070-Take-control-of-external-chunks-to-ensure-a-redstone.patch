@@ -95,10 +95,10 @@ index 992b9fb0860dafd045708f0135869a480024e5f7..63d640110e79f069fd7ceef39e86ac11
                      this.removeBlockEntity(blockposition);
                  }
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index d5c2407ce3e3ad1fa55d616723fa40a300ffce29..7d4f89c922efa0298809dbf8a55c066770679722 100644
+index dd54000a43060736a1515e0a18abc51ebc356e63..532ed510ddd0f2b423da79abbbef3e21e5f73840 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
-@@ -153,6 +153,8 @@ public class MultiPaper {
+@@ -151,6 +151,8 @@ public class MultiPaper {
                  broadcastPacketToExternalServers(new TimeUpdatePacket(level));
              }
          }

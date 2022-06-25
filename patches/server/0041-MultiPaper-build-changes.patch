@@ -5,7 +5,7 @@ Subject: [PATCH] MultiPaper build changes
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 5ad21cbea260906ca1c0bad16a7398cf8cc9a910..3fe8e1d35bf21ec2d28bf90e63bb013481b25d34 100644
+index 63872e4644b82abd9568ea31183b29af9dd9e41d..2767481a39a614468c0edb34f5f43038dff6b28b 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -9,7 +9,7 @@ plugins {
@@ -14,10 +14,10 @@ index 5ad21cbea260906ca1c0bad16a7398cf8cc9a910..3fe8e1d35bf21ec2d28bf90e63bb0134
  dependencies {
 -    implementation(project(":Airplane-API")) // Airplane // Paper
 +    implementation(project(":MultiPaper-API")) // MultiPaper // Airplane // Paper
-     implementation("io.papermc.paper:paper-mojangapi:1.18-R0.1-SNAPSHOT") // Airplane
-     // Paper start
-     implementation("org.jline:jline-terminal-jansi:3.21.0")
-@@ -72,7 +72,9 @@ tasks.jar {
+     // Airplane start
+     implementation("io.papermc.paper:paper-mojangapi:1.19-R0.1-SNAPSHOT") {
+         exclude("io.papermc.paper", "paper-api")
+@@ -75,7 +75,9 @@ tasks.jar {
      manifest {
          val git = Git(rootProject.layout.projectDirectory.path)
          val gitHash = git("rev-parse", "--short=7", "HEAD").getText().trim()
@@ -28,7 +28,7 @@ index 5ad21cbea260906ca1c0bad16a7398cf8cc9a910..3fe8e1d35bf21ec2d28bf90e63bb0134
          val date = git("show", "-s", "--format=%ci", gitHash).getText().trim() // Paper
          val gitBranch = git("rev-parse", "--abbrev-ref", "HEAD").getText().trim() // Paper
          attributes(
-@@ -80,6 +82,7 @@ tasks.jar {
+@@ -83,6 +85,7 @@ tasks.jar {
              "Implementation-Title" to "CraftBukkit",
              "Implementation-Version" to "git-Paper-$implementationVersion",
              "Implementation-Version" to "git-Airplane-$implementationVersion", // Airplane

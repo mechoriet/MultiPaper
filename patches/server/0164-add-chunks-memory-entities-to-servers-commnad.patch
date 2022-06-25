@@ -72,10 +72,10 @@ index ceaad2b5af855905ad1b87e7308fb354304819b1..874cec1b56060cbe3afd7923fc00b4a9
          this.connection = connection;
      }
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index 898e5a696322156b7aa4dede3a0741d717b534ba..929c886396b6d33fb5c1854cdc8ce312931b4c64 100644
+index 0ac062f1c9d3c3c354d1e120ba2eb222a00d2ade..d92dc894444fbb4d53def08da46fd281cdb38d3e 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
-@@ -182,6 +182,10 @@ public class MultiPaper {
+@@ -180,6 +180,10 @@ public class MultiPaper {
          getConnection().send(new WriteTickTimeMessage(time, (float) tps));
      }
  

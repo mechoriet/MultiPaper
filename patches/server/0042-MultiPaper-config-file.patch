@@ -67,10 +67,10 @@ index 1b9e91b20dd9a9375a0a2a6a4d7a0bcdce9e7b1a..e1e51af894f4d6bbe9b1114c6d69b7ab
                          .withRequiredArg()
 diff --git a/src/main/java/puregero/multipaper/MultiPaperConfig.java b/src/main/java/puregero/multipaper/MultiPaperConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..5c3224dd28c0ae7dd96b25196520c161d22f32b3
+index 0000000000000000000000000000000000000000..f3bf907749bf44a91f513415f1b895c143df82f5
 --- /dev/null
 +++ b/src/main/java/puregero/multipaper/MultiPaperConfig.java
-@@ -0,0 +1,217 @@
+@@ -0,0 +1,222 @@
 +package puregero.multipaper;
 +
 +import com.google.common.base.Throwables;
@@ -287,6 +287,11 @@ index 0000000000000000000000000000000000000000..5c3224dd28c0ae7dd96b25196520c161
 +    private static void checkChunkLightingOnLoad() {
 +        checkChunkLightingOnLoad = getBoolean("optimizations.checkChunkLightingOnLoad", true);
 +    }
++
++   public static boolean syncPermissions;
++   private static void syncPermissions() {
++       syncPermissions = getBoolean("syncPermissions", true);
++   }
 +}
 diff --git a/src/main/java/puregero/multipaper/permissions/MultiPaperCommandPermissions.java b/src/main/java/puregero/multipaper/permissions/MultiPaperCommandPermissions.java
 new file mode 100644

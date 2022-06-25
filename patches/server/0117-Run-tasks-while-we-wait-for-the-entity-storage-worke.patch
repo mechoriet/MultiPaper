@@ -6,7 +6,7 @@ Subject: [PATCH] Run tasks while we wait for the entity storage worker to
 
 
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/EntityStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/EntityStorage.java
-index 8d074ebb7c9c7e568f48e3475816ac2cde67dc4b..18504b91ff4f10e5f06dd2f0cca7fb4d41ff172f 100644
+index 6686edfdc574a90de67d650e2e9df74dfc46abb0..7cfb48ae549a897dbd7ce1742f3fc63b8cafe501 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/EntityStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/EntityStorage.java
 @@ -125,7 +125,12 @@ public class EntityStorage implements EntityPersistentStorage<Entity> {

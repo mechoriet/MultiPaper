@@ -5,10 +5,10 @@ Subject: [PATCH] Add zstd compression
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index f4c50397dfdd9614b160df59794aa81452146077..9a90773511c414ca7d3fd485b45d972a7423ac9f 100644
+index 7c09c2ae0a0b15a5a343f78508eab4e0e5bc2101..ad00a06a2728b925fc4665322021272b8595cd18 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -31,6 +31,7 @@ dependencies {
+@@ -34,6 +34,7 @@ dependencies {
      implementation("org.ow2.asm:asm-commons:9.3") // Paper - ASM event executor generation
      implementation("org.spongepowered:configurate-yaml:4.1.2") // Paper - config files
      implementation("commons-lang:commons-lang:2.6")

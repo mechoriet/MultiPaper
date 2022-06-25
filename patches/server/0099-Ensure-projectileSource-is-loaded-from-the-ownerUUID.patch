@@ -5,7 +5,7 @@ Subject: [PATCH] Ensure projectileSource is loaded from the ownerUUID
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/Projectile.java b/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
-index 87080746fee24dc048852cc516b4e39f5c46ea3d..4fa92f32ba33cd3c15e74cc5e3eb4a713a5bc8af 100644
+index ce42172aa83e487e3cb2ff91593b2364b14e64a6..c60f0da070234148419e6f8b0a8b30c49e3d00fb 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
 +++ b/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
 @@ -99,6 +99,8 @@ public abstract class Projectile extends Entity {

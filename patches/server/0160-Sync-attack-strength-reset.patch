@@ -5,7 +5,7 @@ Subject: [PATCH] Sync attack strength reset
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 2a91dc82cdc7569bbe1173adacb9e34252b0af22..dbe297078196d9fb1647d0733cda5732ccde72a8 100644
+index 4e1372337279584b862e4491a742701f4a65a294..cc5b195959561cedf10a2d05e82ba1e7a0f7c628 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
 @@ -125,6 +125,7 @@ import org.bukkit.event.entity.EntityExhaustionEvent;
@@ -16,7 +16,31 @@ index 2a91dc82cdc7569bbe1173adacb9e34252b0af22..dbe297078196d9fb1647d0733cda5732
  // CraftBukkit end
  
  public abstract class Player extends LivingEntity {
-@@ -2247,6 +2248,7 @@ public abstract class Player extends LivingEntity {
+@@ -306,7 +307,12 @@ public abstract class Player extends LivingEntity {
+         if (d0 != this.getX() || d1 != this.getZ()) {
+             this.setPos(d0, this.getY(), d1);
+         }
++    // MultiPaper start
++        tickAttackStrength();
++        tickAttackStrengthAfter();
++    }
+ 
++    public void tickAttackStrength() {
+         ++this.attackStrengthTicker;
+         ItemStack itemstack = this.getMainHandItem();
+ 
+@@ -318,6 +324,10 @@ public abstract class Player extends LivingEntity {
+             this.lastItemInMainHand = itemstack; // MultiPaper - don't compare items if they're the same item
+         }
+ 
++    }
++
++    public void tickAttackStrengthAfter() {
++    // MultiPaper end
+         this.turtleHelmetTick();
+         this.cooldowns.tick();
+         this.updatePlayerPose();
+@@ -2237,6 +2247,7 @@ public abstract class Player extends LivingEntity {
      }
  
      public void resetAttackStrengthTicker() {
@@ -24,6 +48,19 @@ index 2a91dc82cdc7569bbe1173adacb9e34252b0af22..dbe297078196d9fb1647d0733cda5732
          this.attackStrengthTicker = 0;
      }
  
+diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
+index 5e6b253b2689e43bbf8530750bbd8242dbe9529f..0ac062f1c9d3c3c354d1e120ba2eb222a00d2ade 100644
+--- a/src/main/java/puregero/multipaper/MultiPaper.java
++++ b/src/main/java/puregero/multipaper/MultiPaper.java
+@@ -92,7 +92,7 @@ public class MultiPaper {
+                 // Copied from Paper end
+ 
+                 externalPlayer.checkInsideBlocks();
+-
++                externalPlayer.tickAttackStrength();
+                 if (player.takeXpDelay > 0) {
+                     --player.takeXpDelay;
+                 }
 diff --git a/src/main/java/puregero/multipaper/externalserverprotocol/ExternalServerPacketSerializer.java b/src/main/java/puregero/multipaper/externalserverprotocol/ExternalServerPacketSerializer.java
 index c456564cda27b1f81809494e71dba41269657b69..67711f3e8b67a3e3c7f6b58d52c773a286ade075 100644
 --- a/src/main/java/puregero/multipaper/externalserverprotocol/ExternalServerPacketSerializer.java
