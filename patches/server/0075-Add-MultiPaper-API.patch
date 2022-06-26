@@ -176,7 +176,7 @@ index 5b92c2ca03baed38f7d41a73fae7dd23ce541d43..61c39c1878acca222cba4a0719ceab32
      public int getFireTicks() {
          return entity.remainingFireTicks;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 29b3a70be0fdc0d5440d9ef6f385faba58267f03..34f381abd38d6ed906fa9b00f7f4a1e3237f2b98 100644
+index 29b3a70be0fdc0d5440d9ef6f385faba58267f03..65c08d2d1ce153f313f80a7fb44ae98471164199 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -24,6 +24,7 @@ import java.util.Optional;
@@ -311,7 +311,7 @@ index 29b3a70be0fdc0d5440d9ef6f385faba58267f03..34f381abd38d6ed906fa9b00f7f4a1e3
 +
 +    @Override
 +    public void chatOnOtherServers(@NotNull String msg) {
-+        MultiPaper.broadcastPacketToExternalServers(getHandle(), new PlayerActionPacket(getHandle(), new ServerboundChatPacket(msg)));
++        MultiPaper.broadcastPacketToExternalServers(getHandle(), new PlayerActionPacket(getHandle(), new ServerboundChatPacket(msg,null,false)));
 +    }
 +
 +    @Override

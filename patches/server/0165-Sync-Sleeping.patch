@@ -1,0 +1,189 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: mechoriet <kevinworm92@gmail.com>
+Date: Sun, 26 Jun 2022 20:09:20 +0200
+Subject: [PATCH] Sync Sleeping
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 19adef78271ec9c77e6eb5757f1e381237638117..71a1adea6f7be5dcd4463a6f73d73947bb5afc05 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -200,7 +200,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+     final EntityTickList entityTickList;
+     public final PersistentEntitySectionManager<Entity> entityManager;
+     public boolean noSave;
+-    private final SleepStatus sleepStatus;
++    public final SleepStatus sleepStatus;
+     private int emptyTime;
+     private final PortalForcer portalForcer;
+     private final LevelTicks<Block> blockTicks;
+@@ -774,7 +774,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+         return !this.server.isSpawningAnimals() && (entity instanceof Animal || entity instanceof WaterAnimal) ? true : !this.server.areNpcsEnabled() && entity instanceof Npc;
+     }
+ 
+-    private void wakeUpAllPlayers() {
++    public void wakeUpAllPlayers() {
+         this.sleepStatus.removeAllSleepers();
+         (this.players.stream().filter(LivingEntity::isSleeping).collect(Collectors.toList())).forEach((entityplayer) -> { // CraftBukkit - decompile error
+             entityplayer.stopSleepInBed(false, false);
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index 08c8d3e3962aa2648326ad67cb7b1252b2764ed6..98048534a632ddc3b84ba66b77bb69ac6dcf2a6d 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -1398,6 +1398,7 @@ public class ServerPlayer extends Player {
+     @Override
+     public void startSleeping(BlockPos pos) {
+         this.resetStat(Stats.CUSTOM.get(Stats.TIME_SINCE_REST));
++        MultiPaper.broadcastPacketToExternalServers(new PlayerSleepingPacket(this.level));
+         super.startSleeping(pos);
+     }
+ 
+@@ -1441,11 +1442,11 @@ public class ServerPlayer extends Player {
+             this.getLevel().getChunkSource().broadcastAndSend(this, new ClientboundAnimatePacket(this, 2));
+         }
+ 
++        //MultiPaper.broadcastPacketToExternalServers(new PlayerSleepingPacket(this.level,true,false));
+         super.stopSleepInBed(skipSleepTimer, updateSleepingPlayers);
+         if (this.connection != null) {
+             this.connection.teleport(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
+         }
+-
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/server/players/SleepStatus.java b/src/main/java/net/minecraft/server/players/SleepStatus.java
+index 823efad652d8ff9e96b99375b102fef6f017716e..6cef0a6b53a36b4ee6e90a293485b242c58c3f32 100644
+--- a/src/main/java/net/minecraft/server/players/SleepStatus.java
++++ b/src/main/java/net/minecraft/server/players/SleepStatus.java
+@@ -10,16 +10,17 @@ public class SleepStatus {
+ 
+     private int activePlayers;
+     private int sleepingPlayers;
++    private int remoteSleepers;
+ 
+     public SleepStatus() {}
+ 
+     public boolean areEnoughSleeping(int percentage) {
+-        return this.sleepingPlayers >= this.sleepersNeeded(percentage);
++        return this.sleepingPlayers + this.remoteSleepers >= this.sleepersNeeded(percentage);
+     }
+ 
+     public boolean areEnoughDeepSleeping(int percentage, List<ServerPlayer> players) {
+         // CraftBukkit start
+-        int j = (int) players.stream().filter((eh) -> { return eh.isSleepingLongEnough() || eh.fauxSleeping; }).count();
++        int j = (int) players.stream().filter((eh) -> { return eh.isSleepingLongEnough() || eh.fauxSleeping; }).count() + this.remoteSleepers;
+         boolean anyDeepSleep = players.stream().anyMatch(Player::isSleepingLongEnough);
+ 
+         return anyDeepSleep && j >= this.sleepersNeeded(percentage);
+@@ -32,6 +33,7 @@ public class SleepStatus {
+ 
+     public void removeAllSleepers() {
+         this.sleepingPlayers = 0;
++        this.remoteSleepers = 0;
+     }
+ 
+     public int amountSleeping() {
+@@ -65,4 +67,11 @@ public class SleepStatus {
+ 
+         return anySleep && (j > 0 || this.sleepingPlayers > 0) && (i != this.activePlayers || j != this.sleepingPlayers); // CraftBukkit
+     }
++
++    public void increaseRemoteSleepers() {
++        this.remoteSleepers++;
++    }
++    public void decreaseRemoteSleepers() {
++        this.remoteSleepers--;
++    }
+ }
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 5885a423f3e05dd9d25d2e2793882f3bb631877e..72c85ac033746af5c1433ae5194fc6fa6fa64045 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1318,7 +1318,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+ 
+     @Override
+     public void chatOnOtherServers(@NotNull String msg) {
+-        MultiPaper.broadcastPacketToExternalServers(getHandle(), new PlayerActionPacket(getHandle(), new ServerboundChatPacket(msg,null,false)));
++        MultiPaper.broadcastPacketToExternalServers(getHandle(), new PlayerActionPacket(getHandle(), new ServerboundChatPacket(msg,net.minecraft.network.chat.MessageSignature.unsigned(),false)));
+     }
+ 
+     @Override
+diff --git a/src/main/java/puregero/multipaper/externalserverprotocol/ExternalServerPacketSerializer.java b/src/main/java/puregero/multipaper/externalserverprotocol/ExternalServerPacketSerializer.java
+index 67711f3e8b67a3e3c7f6b58d52c773a286ade075..37415e06d0314ffcfbd610fba5dab5f414e67a5a 100644
+--- a/src/main/java/puregero/multipaper/externalserverprotocol/ExternalServerPacketSerializer.java
++++ b/src/main/java/puregero/multipaper/externalserverprotocol/ExternalServerPacketSerializer.java
+@@ -70,6 +70,7 @@ public class ExternalServerPacketSerializer {
+         addPacket(ProjectileHitEntityPacket.class, ProjectileHitEntityPacket::new);
+         addPacket(PlayerUseBlockPacket.class, PlayerUseBlockPacket::new);
+         addPacket(PlayerResetAttackStrengthPosition.class, PlayerResetAttackStrengthPosition::new);
++        addPacket(PlayerSleepingPacket.class, PlayerSleepingPacket::new);
+     }
+ 
+     private static void addPacket(Class<? extends ExternalServerPacket> clazz, Function<FriendlyByteBuf, ExternalServerPacket> deserializer) {
+diff --git a/src/main/java/puregero/multipaper/externalserverprotocol/PlayerSleepingPacket.java b/src/main/java/puregero/multipaper/externalserverprotocol/PlayerSleepingPacket.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..49e794254f4558837f679941282c9a85b6b489af
+--- /dev/null
++++ b/src/main/java/puregero/multipaper/externalserverprotocol/PlayerSleepingPacket.java
+@@ -0,0 +1,61 @@
++package puregero.multipaper.externalserverprotocol;
++
++
++import net.minecraft.network.FriendlyByteBuf;
++import net.minecraft.server.level.ServerLevel;
++import net.minecraft.world.entity.player.Player;
++import net.minecraft.world.level.Level;
++import org.bukkit.Bukkit;
++import org.bukkit.World;
++import org.bukkit.craftbukkit.CraftWorld;
++import puregero.multipaper.ExternalServerConnection;
++
++public class PlayerSleepingPacket extends ExternalServerPacket {
++
++    private final String world;
++    private boolean exit;
++    private boolean removefrombed;
++
++
++    public PlayerSleepingPacket(Level level) {
++        this(level,false,false);
++    }
++
++    public PlayerSleepingPacket(Level level,boolean exit, boolean removefrombed) {
++        world = level.getWorld().getName();
++        exit = exit;
++        removefrombed = removefrombed;
++    }
++
++    public PlayerSleepingPacket(FriendlyByteBuf in) {
++        world = in.readUtf();
++        exit = in.readBoolean();
++        removefrombed = in.readBoolean();
++    }
++
++    @Override
++    public void write(FriendlyByteBuf out) {
++        out.writeUtf(world);
++        out.writeBoolean(exit);
++        out.writeBoolean(removefrombed);
++    }
++
++    @Override
++    public void handle(ExternalServerConnection connection) {
++        World bukkitWorld = Bukkit.getWorld(world);
++        if (bukkitWorld != null) {
++            ServerLevel level = ((CraftWorld) bukkitWorld).getHandle();
++            if(removefrombed) {
++                // asuming we skipped the night by timetraveling
++                level.wakeUpAllPlayers();
++            }
++            if(exit) {
++                level.sleepStatus.decreaseRemoteSleepers();
++                return;
++            }
++            level.sleepStatus.increaseRemoteSleepers();
++        }
++    }
++
++
++}
