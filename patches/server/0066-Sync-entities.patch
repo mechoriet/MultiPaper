@@ -718,7 +718,7 @@ index ec325d9fee73e64a043f3e9a9d965e87b595a1b5..ae5f006b5876b933a02ba11b75a93538
 +    }
  }
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index 7dd1101a3c2e1d94ab584fe888565315089e757e..dd54000a43060736a1515e0a18abc51ebc356e63 100644
+index 6bf5b9cf9611a40811f3db7b1f11ad1e8415d519..0ae37759639944f7130c616a572a78a081fc5395 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
 @@ -116,6 +116,9 @@ public class MultiPaper {
@@ -1450,7 +1450,7 @@ index 0000000000000000000000000000000000000000..9e411127484733e2022f3f8b1cd7ed24
 +}
 diff --git a/src/main/java/puregero/multipaper/externalserverprotocol/EntityUpdatePacket.java b/src/main/java/puregero/multipaper/externalserverprotocol/EntityUpdatePacket.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..9a07413a402b05b5600d2671f6d94661be76c22e
+index 0000000000000000000000000000000000000000..2ff68d25f4dd3c917f9bc074802f74c338eb0f90
 --- /dev/null
 +++ b/src/main/java/puregero/multipaper/externalserverprotocol/EntityUpdatePacket.java
 @@ -0,0 +1,95 @@
@@ -1480,18 +1480,18 @@ index 0000000000000000000000000000000000000000..9a07413a402b05b5600d2671f6d94661
 +
 +    private static final Logger LOGGER = LogManager.getLogger(EntityUpdatePacket.class.getSimpleName());
 +
-+    private final String world;
++    private final UUID world;
 +    private final UUID uuid;
 +    private final Packet<?> packet;
 +
 +    public EntityUpdatePacket(Entity entity, Packet<?> packet) {
-+        this.world = ((ServerLevel) entity.level).convertable.getLevelId();
++        this.world = ((ServerLevel) entity.level).uuid;
 +        this.uuid = entity.getUUID();
 +        this.packet = packet;
 +    }
 +
 +    public EntityUpdatePacket(FriendlyByteBuf in) {
-+        world = in.readUtf();
++        world = in.readUUID();
 +        uuid = in.readUUID();
 +
 +        ByteBuf buf = Unpooled.wrappedBuffer(in.readByteArray());
@@ -1502,7 +1502,7 @@ index 0000000000000000000000000000000000000000..9a07413a402b05b5600d2671f6d94661
 +
 +    @Override
 +    public void write(FriendlyByteBuf out) {
-+        out.writeUtf(world);
++        out.writeUUID(world);
 +        out.writeUUID(uuid);
 +
 +        ConnectionProtocol protocol = ConnectionProtocol.getProtocolForPacket(packet);
@@ -1551,7 +1551,7 @@ index 0000000000000000000000000000000000000000..9a07413a402b05b5600d2671f6d94661
 +}
 diff --git a/src/main/java/puregero/multipaper/externalserverprotocol/EntityUpdateWithDependenciesPacket.java b/src/main/java/puregero/multipaper/externalserverprotocol/EntityUpdateWithDependenciesPacket.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..c96cba44012a7bf840270096514d975e35ed55aa
+index 0000000000000000000000000000000000000000..65ab90524dd61bf14d7a7ca1f84ca316b383ce8e
 --- /dev/null
 +++ b/src/main/java/puregero/multipaper/externalserverprotocol/EntityUpdateWithDependenciesPacket.java
 @@ -0,0 +1,133 @@
@@ -1583,20 +1583,20 @@ index 0000000000000000000000000000000000000000..c96cba44012a7bf840270096514d975e
 +
 +    private static final Logger LOGGER = LogManager.getLogger(EntityUpdateWithDependenciesPacket.class.getSimpleName());
 +
-+    private final String world;
++    private final UUID world;
 +    private final UUID uuid;
 +    private final UUID[] uuids;
 +    private final Packet<?> packet;
 +
 +    public EntityUpdateWithDependenciesPacket(Entity entity, Collection<Entity> dependents, Packet<?> packet) {
-+        this.world = ((ServerLevel) entity.level).convertable.getLevelId();
++        this.world = ((ServerLevel) entity.level).uuid;
 +        this.uuid = entity.getUUID();
 +        this.uuids = dependents.stream().filter(Objects::nonNull).map(Entity::getUUID).toArray(UUID[]::new);
 +        this.packet = packet;
 +    }
 +
 +    public EntityUpdateWithDependenciesPacket(FriendlyByteBuf in) {
-+        world = in.readUtf();
++        world = in.readUUID();
 +        uuid = in.readUUID();
 +
 +        uuids = new UUID[in.readVarInt()];
@@ -1613,7 +1613,7 @@ index 0000000000000000000000000000000000000000..c96cba44012a7bf840270096514d975e
 +
 +    @Override
 +    public void write(FriendlyByteBuf out) {
-+        out.writeUtf(world);
++        out.writeUUID(world);
 +        out.writeUUID(uuid);
 +
 +        out.writeVarInt(uuids.length);
@@ -1877,7 +1877,7 @@ index 0000000000000000000000000000000000000000..cb6d153158d5de470582b66f9253fde2
 +}
 diff --git a/src/main/java/puregero/multipaper/externalserverprotocol/RequestEntityPacket.java b/src/main/java/puregero/multipaper/externalserverprotocol/RequestEntityPacket.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..ad20a754e775df761f5c8f54550237cf52403803
+index 0000000000000000000000000000000000000000..e4c047bb0cf665baeabed982d1e310076e49dfd4
 --- /dev/null
 +++ b/src/main/java/puregero/multipaper/externalserverprotocol/RequestEntityPacket.java
 @@ -0,0 +1,88 @@
@@ -1906,22 +1906,22 @@ index 0000000000000000000000000000000000000000..ad20a754e775df761f5c8f54550237cf
 +
 +    private static final Logger LOGGER = LogManager.getLogger(RequestEntityPacket.class.getSimpleName());
 +
-+    private final String world;
++    private final UUID world;
 +    private final UUID uuid;
 +
-+    public RequestEntityPacket(String world, UUID uuid) {
++    public RequestEntityPacket(UUID world, UUID uuid) {
 +        this.world = world;
 +        this.uuid = uuid;
 +    }
 +
 +    public RequestEntityPacket(FriendlyByteBuf in) {
-+        this.world = in.readUtf();
++        this.world = in.readUUID();
 +        this.uuid = in.readUUID();
 +    }
 +
 +    @Override
 +    public void write(FriendlyByteBuf out) {
-+        out.writeUtf(world);
++        out.writeUUID(world);
 +        out.writeUUID(uuid);
 +    }
 +
@@ -2126,7 +2126,7 @@ index 0000000000000000000000000000000000000000..493e0a44a9d4bd826deeea3af10ca5c9
 +    }
 +}
 diff --git a/src/main/java/puregero/multipaper/externalserverprotocol/SendUpdatePacket.java b/src/main/java/puregero/multipaper/externalserverprotocol/SendUpdatePacket.java
-index cfee3af635094603a3ee14812ffea71548867bc8..1cf284c1f69cc0a032509e249bf4bd764c77394f 100644
+index 01cbc324cb6c9e656cd7851d018d91c1e640b046..619ea03b58b41906d2c15c32a47047b3e8a8f3b9 100644
 --- a/src/main/java/puregero/multipaper/externalserverprotocol/SendUpdatePacket.java
 +++ b/src/main/java/puregero/multipaper/externalserverprotocol/SendUpdatePacket.java
 @@ -7,6 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
@@ -2137,15 +2137,15 @@ index cfee3af635094603a3ee14812ffea71548867bc8..1cf284c1f69cc0a032509e249bf4bd76
  import org.apache.logging.log4j.LogManager;
  import org.apache.logging.log4j.Logger;
  import puregero.multipaper.ExternalServerConnection;
-@@ -21,6 +22,11 @@ public class SendUpdatePacket extends ExternalServerPacket {
-     private final String world;
+@@ -23,6 +24,11 @@ public class SendUpdatePacket extends ExternalServerPacket {
+     private final UUID world;
      private final Packet<?> packet;
  
 +    public SendUpdatePacket(ServerLevel level, Packet<?> packet) {
-+        this.world = level.convertable.getLevelId();
++        this.world = level.uuid;
 +        this.packet = packet;
 +    }
 +
-     public SendUpdatePacket(String world, Packet<?> packet) {
+     public SendUpdatePacket(UUID world, Packet<?> packet) {
          this.world = world;
          this.packet = packet;

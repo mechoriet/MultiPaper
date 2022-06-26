@@ -250,121 +250,131 @@ index d22322dd08fa2723bcee73f47601acf5158cf824..04c54087706a581a70b7d56c88ee7ed2
      }
  
 diff --git a/src/main/java/net/minecraft/world/item/ItemStack.java b/src/main/java/net/minecraft/world/item/ItemStack.java
-index 6b3cfc19c4fd1382ddf534265a1114995a4f6b55..f5192a67add7358cfe3d6d9a01d83299a1d66358 100644
+index 6b3cfc19c4fd1382ddf534265a1114995a4f6b55..b7ca1d7724aa193e72c41002d8d3f64b8da5af42 100644
 --- a/src/main/java/net/minecraft/world/item/ItemStack.java
 +++ b/src/main/java/net/minecraft/world/item/ItemStack.java
-@@ -146,6 +146,8 @@ public final class ItemStack {
+@@ -146,6 +146,18 @@ public final class ItemStack {
      private AdventureModeCheck adventureBreakCheck;
      @Nullable
      private AdventureModeCheck adventurePlaceCheck;
-+    public boolean dirty = true; // MultiPaper
-+    static { EMPTY.dirty = false; } // MultiPaper
++    // MultiPaper start
++    public boolean dirty = true;
++    static { EMPTY.dirty = false; }
++    @Nullable
++    public puregero.multipaper.NonNullListFilter<? extends ItemStack> listeningComponent;
++
++    public void markDirty() {
++        if (this == EMPTY || listeningComponent == null || listeningComponent.markDirty()) {
++            dirty = true;
++        }
++    }
++    // MultiPaper end
  
      public Optional<TooltipComponent> getTooltipImage() {
          return this.getItem().getTooltipImage(this);
-@@ -266,6 +268,7 @@ public final class ItemStack {
+@@ -266,6 +278,7 @@ public final class ItemStack {
              this.setDamageValue(this.getDamageValue());
          }
  
-+        dirty = true; // MultiPaper
++        markDirty(); // MultiPaper
      }
  
      private ItemStack(CompoundTag nbt) {
-@@ -541,6 +544,8 @@ public final class ItemStack {
+@@ -541,6 +554,8 @@ public final class ItemStack {
  
      public void setDamageValue(int damage) {
          this.getOrCreateTag().putInt("Damage", Math.max(0, damage));
 +
-+        dirty = true; // MultiPaper
++        markDirty(); // MultiPaper
      }
  
      public int getMaxDamage() {
-@@ -811,6 +816,8 @@ public final class ItemStack {
+@@ -811,6 +826,8 @@ public final class ItemStack {
              if (this.tag.isEmpty()) {
                  this.tag = null;
              }
 +
-+            dirty = true; // MultiPaper
++            markDirty(); // MultiPaper
          }
  
      }
-@@ -849,6 +856,7 @@ public final class ItemStack {
+@@ -849,6 +866,7 @@ public final class ItemStack {
              this.getItem().verifyTagAfterLoad(nbt);
          }
  
-+        dirty = true; // MultiPaper
++        markDirty(); // MultiPaper
      }
  
      public Component getHoverName() {
-@@ -880,6 +888,8 @@ public final class ItemStack {
+@@ -880,6 +898,8 @@ public final class ItemStack {
              nbttagcompound.remove("Name");
          }
  
-+        dirty = true; // MultiPaper
++        markDirty(); // MultiPaper
 +
          return this;
      }
  
-@@ -897,6 +907,8 @@ public final class ItemStack {
+@@ -897,6 +917,8 @@ public final class ItemStack {
              this.tag = null;
          }
  
-+        dirty = true; // MultiPaper
++        markDirty(); // MultiPaper
 +
      }
  
      public boolean hasCustomHoverName() {
-@@ -1082,6 +1094,8 @@ public final class ItemStack {
+@@ -1082,6 +1104,8 @@ public final class ItemStack {
          CompoundTag nbttagcompound = this.getOrCreateTag();
  
          nbttagcompound.putInt("HideFlags", nbttagcompound.getInt("HideFlags") | tooltipSection.getMask());
 +
-+        dirty = true; // MultiPaper
++        markDirty(); // MultiPaper
      }
  
      public static void appendEnchantmentNames(List<Component> tooltip, ListTag enchantments) {
-@@ -1131,6 +1145,8 @@ public final class ItemStack {
+@@ -1131,6 +1155,8 @@ public final class ItemStack {
  
          nbttaglist.add(EnchantmentHelper.storeEnchantment(EnchantmentHelper.getEnchantmentId(enchantment), (byte) level));
          processEnchantOrder(this.tag); // Paper
 +
-+        dirty = true; // MultiPaper
++        markDirty(); // MultiPaper
      }
  
      public boolean isEnchanted() {
-@@ -1139,6 +1155,8 @@ public final class ItemStack {
+@@ -1139,6 +1165,8 @@ public final class ItemStack {
  
      public void addTagElement(String key, Tag element) {
          this.getOrCreateTag().put(key, element);
 +
-+        dirty = true; // MultiPaper
++        markDirty(); // MultiPaper
      }
  
      public boolean isFramed() {
-@@ -1171,6 +1189,8 @@ public final class ItemStack {
+@@ -1171,6 +1199,8 @@ public final class ItemStack {
          }
          // CraftBukkit end
          this.getOrCreateTag().putInt("RepairCost", repairCost);
 +
-+        dirty = true; // MultiPaper
++        markDirty(); // MultiPaper
      }
  
      public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-@@ -1224,6 +1244,8 @@ public final class ItemStack {
+@@ -1224,6 +1254,8 @@ public final class ItemStack {
      public void setItem(Item item) {
          this.bukkitStack = null; // Paper
          this.item = item;
 +
-+        dirty = true; // MultiPaper
++        markDirty(); // MultiPaper
      }
      // CraftBukkit end
  
-@@ -1276,6 +1298,8 @@ public final class ItemStack {
+@@ -1276,6 +1308,8 @@ public final class ItemStack {
      public void setCount(int count) {
          this.count = count;
          this.updateEmptyCacheFlag();
 +
-+        dirty = true; // MultiPaper
++        markDirty(); // MultiPaper
      }
  
      public void grow(int amount) {
@@ -383,7 +393,7 @@ index 3d61be7dca76a0eea39bce8f7455176d2f6b9a98..3ba42c9ab0d3bafb6e4d5273dcb0e5e5
 +    }
  }
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index 060dbfcdc1fe0b19f18b9bc13bcb3b38dfe2e946..2d2eceab6391f83f402b48723cefc336552c5fd4 100644
+index debf29194dddf9429eafec413a76a7f192216072..6d83c39f2a2a91f617d7a6abbf43dbaf3cf786d9 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
 @@ -5,6 +5,7 @@ import net.minecraft.world.Container;
@@ -429,7 +439,7 @@ index 060dbfcdc1fe0b19f18b9bc13bcb3b38dfe2e946..2d2eceab6391f83f402b48723cefc336
      public static byte[] nbtToBytes(CompoundTag compoundTag) throws IOException {
          if (compoundTag == null) {
              return new byte[0];
-@@ -544,4 +550,8 @@ public class MultiPaper {
+@@ -551,4 +557,8 @@ public class MultiPaper {
      public static void chunkChangedStatus(ServerLevel level, ChunkPos pos, ChunkStatus status) {
          getConnection().send(new ChunkChangedStatusMessage(level.getWorld().getName(), pos.x, pos.z, Registry.CHUNK_STATUS.getKey(status).toString()));
      }
@@ -440,10 +450,10 @@ index 060dbfcdc1fe0b19f18b9bc13bcb3b38dfe2e946..2d2eceab6391f83f402b48723cefc336
  }
 diff --git a/src/main/java/puregero/multipaper/MultiPaperInventoryHandler.java b/src/main/java/puregero/multipaper/MultiPaperInventoryHandler.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..ef6e20112fe125e07e3f56729a09da8679633c91
+index 0000000000000000000000000000000000000000..bfe3d25c5b2cd587a2c5277e9a2e62b977023867
 --- /dev/null
 +++ b/src/main/java/puregero/multipaper/MultiPaperInventoryHandler.java
-@@ -0,0 +1,357 @@
+@@ -0,0 +1,355 @@
 +package puregero.multipaper;
 +
 +import net.minecraft.nbt.CompoundTag;
@@ -573,7 +583,7 @@ index 0000000000000000000000000000000000000000..ef6e20112fe125e07e3f56729a09da86
 +
 +            if (MultiPaper.isRealPlayer(player) && replacingItem != null && !ItemStack.matches(replacingItem, currentItem)) {
 +                // The expected item doesn't match, a merge is required
-+                item.dirty = true; // Resend the item afterwards to sync the other servers
++                item.dirty = true; component.isDirty = true; // Resend the item afterwards to sync the other servers
 +                if (isSameItemSameTagIgnoringDurability(replacingItem, item)) {
 +                    if (replacingItem.getCount() != item.getCount()) {
 +                        int countDiff = item.getCount() - replacingItem.getCount();
@@ -722,31 +732,29 @@ index 0000000000000000000000000000000000000000..ef6e20112fe125e07e3f56729a09da86
 +            return;
 +        }
 +
-+        ListTag items = new ListTag();
-+        for (int i = 0; i < inventoryComponent.size(); i++) {
-+            if (inventoryComponent.dirty[i] || inventoryComponent.get(i).dirty) {
-+                CompoundTag item = new CompoundTag();
-+                item.putInt("Slot", i);
-+                inventoryComponent.get(i).save(item);
-+                items.add(item);
++        if (inventoryComponent.isDirty) {
++            inventoryComponent.isDirty = false;
++            ListTag items = new ListTag();
++            for (int i = 0; i < inventoryComponent.size(); i++) {
++                if (inventoryComponent.dirty[i] || inventoryComponent.get(i).dirty) {
++                    CompoundTag item = new CompoundTag();
++                    item.putInt("Slot", i);
++                    inventoryComponent.get(i).save(item);
++                    items.add(item);
 +
-+                if (!MultiPaper.isRealPlayer(player)) {
-+                    CompoundTag replacingItem = new CompoundTag();
-+                    inventoryComponent.lastItems.get(i).save(replacingItem);
-+                    item.put("Replacing", replacingItem);
++                    if (!MultiPaper.isRealPlayer(player)) {
++                        inventoryComponent.dirty[i] = false;
++                        inventoryComponent.get(i).dirty = false;
++                        inventoryComponent.lastItems.set(i, inventoryComponent.get(i).copy());
++                    }
++                    if (!items.isEmpty()) {
++                        CompoundTag itemsRoot = new CompoundTag();
++                        itemsRoot.put("items", items);
++                        MultiPaper.broadcastPacketToExternalServers(player, new PlayerInventoryUpdatePacket(player, inventoryComponent.name, itemsRoot));
++                        player.detectEquipmentUpdates();
++                    }
 +                }
-+
-+                inventoryComponent.dirty[i] = false;
-+                inventoryComponent.get(i).dirty = false;
-+                inventoryComponent.lastItems.set(i, inventoryComponent.get(i).copy());
 +            }
-+        }
-+
-+        if (!items.isEmpty()) {
-+            CompoundTag itemsRoot = new CompoundTag();
-+            itemsRoot.put("items", items);
-+            MultiPaper.broadcastPacketToExternalServers(player, new PlayerInventoryUpdatePacket(player, inventoryComponent.name, itemsRoot));
-+            player.detectEquipmentUpdates();
 +        }
 +    }
 +
@@ -803,10 +811,10 @@ index 0000000000000000000000000000000000000000..ef6e20112fe125e07e3f56729a09da86
 +}
 diff --git a/src/main/java/puregero/multipaper/NonNullListFilter.java b/src/main/java/puregero/multipaper/NonNullListFilter.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..f55917e9ab8be2828d803eb79eafa55d48ca31dd
+index 0000000000000000000000000000000000000000..62f80d5e0231b0bf11ce0def0fbacfcf820203e4
 --- /dev/null
 +++ b/src/main/java/puregero/multipaper/NonNullListFilter.java
-@@ -0,0 +1,64 @@
+@@ -0,0 +1,74 @@
 +package puregero.multipaper;
 +
 +import net.minecraft.core.NonNullList;
@@ -823,6 +831,7 @@ index 0000000000000000000000000000000000000000..f55917e9ab8be2828d803eb79eafa55d
 +    public final boolean[] dirty;
 +    public final Player player;
 +    public final String name;
++    public boolean isDirty;
 +
 +    protected NonNullListFilter(List<E> delegate, @Nullable E initialElement, Player player, String name) {
 +        super(delegate, initialElement);
@@ -839,8 +848,16 @@ index 0000000000000000000000000000000000000000..f55917e9ab8be2828d803eb79eafa55d
 +        return new NonNullListFilter<E>(Arrays.asList((E[])objects), defaultValue, player, name);
 +    }
 +
-+    public boolean markDirty(int i) {
++    public boolean markDirty() {
 +        if (MultiPaperInventoryHandler.markDirty(this)) {
++              isDirty = true;
++              return true;
++          }
++          return false;
++        }
++
++        public boolean markDirty(int i) {
++        if (markDirty()) {
 +            dirty[i] = true;
 +            return true;
 +        }
@@ -849,6 +866,7 @@ index 0000000000000000000000000000000000000000..f55917e9ab8be2828d803eb79eafa55d
 +
 +    @Override
 +    public E set(int i, E object) {
++        object.listeningComponent = this;
 +        markDirty(i);
 +        return super.set(i, object);
 +    }

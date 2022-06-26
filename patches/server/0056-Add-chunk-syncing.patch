@@ -863,7 +863,7 @@ index 96f62ac0e95c1db86f6e53eb0397ef79aefed914..ec325d9fee73e64a043f3e9a9d965e87
 +    }
  }
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index 962263a2f71c209b2b160a3d448bb9b3f267a114..99a03a69afe0022ecca1fe88c29ad492bf016e1c 100644
+index 962263a2f71c209b2b160a3d448bb9b3f267a114..bb5b4cd8da93a9034e3b43027fa5c4f54ff07f3f 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
 @@ -1,29 +1,63 @@
@@ -961,7 +961,7 @@ index 962263a2f71c209b2b160a3d448bb9b3f267a114..99a03a69afe0022ecca1fe88c29ad492
      }
  
      public static void sendTickTime(long time, double tps) {
-@@ -155,4 +208,221 @@ public class MultiPaper {
+@@ -155,4 +208,228 @@ public class MultiPaper {
      public static boolean isExternalPlayer(org.bukkit.entity.Entity bukkitEntity) {
          return isExternalPlayer(((CraftEntity) bukkitEntity).getHandle());
      }
@@ -1165,7 +1165,14 @@ index 962263a2f71c209b2b160a3d448bb9b3f267a114..99a03a69afe0022ecca1fe88c29ad492
 +    }
 +
 +    public static ChunkHolder getChunkHolder(String world, int x, int z) {
-+        ServerLevel level = ((CraftWorld) Bukkit.getWorld(world)).getHandle();
++        return getChunkHolder(((CraftWorld) Bukkit.getWorld(world)).getHandle(), x, z);
++    }
++
++    public static ChunkHolder getChunkHolder(java.util.UUID world, int x, int z) {
++        return getChunkHolder(((CraftWorld) Bukkit.getWorld(world)).getHandle(), x, z);
++    }
++
++    public static ChunkHolder getChunkHolder(ServerLevel level, int x, int z) {
 +        ChunkHolder holder = level.chunkSource.chunkMap.getVisibleChunkIfPresent(ChunkPos.asLong(x, z));
 +
 +        if (holder == null) {
@@ -1185,7 +1192,7 @@ index 962263a2f71c209b2b160a3d448bb9b3f267a114..99a03a69afe0022ecca1fe88c29ad492
  }
 diff --git a/src/main/java/puregero/multipaper/MultiPaperChunkHandler.java b/src/main/java/puregero/multipaper/MultiPaperChunkHandler.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..5d6276db4927dfaa5d97bd478b8ea36f033da65b
+index 0000000000000000000000000000000000000000..14685c638447b7beffb7ade78a1c8e8c5f3dc63c
 --- /dev/null
 +++ b/src/main/java/puregero/multipaper/MultiPaperChunkHandler.java
 @@ -0,0 +1,263 @@
@@ -1296,7 +1303,7 @@ index 0000000000000000000000000000000000000000..5d6276db4927dfaa5d97bd478b8ea36f
 +        if (blockUpdateChunk == null) { // Don't broadcast the update to other servers if we're handling an update
 +            for (ExternalServer externalServer : chunk.externalSubscribers) {
 +                if (!externalServer.isMe()) {
-+                    externalServer.getConnection().send(new SendUpdatePacket(chunkHolder.getWorld().getWorld().getName(), packet));
++                    externalServer.getConnection().send(new SendUpdatePacket(chunkHolder.getWorld().uuid, packet));
 +                }
 +            }
 +        }
@@ -1304,7 +1311,7 @@ index 0000000000000000000000000000000000000000..5d6276db4927dfaa5d97bd478b8ea36f
 +
 +    public static ChunkAccess blockUpdateChunk = null;
 +    private static ChunkHolder holder = null;
-+    public static void handleBlockUpdate(String world, Packet<?> packet, int depth) {
++    public static void handleBlockUpdate(java.util.UUID world, Packet<?> packet, int depth) {
 +        holder = null;
 +        blockUpdateChunk = null;
 +        ChunkAccess tempChunk = null;
@@ -1638,7 +1645,7 @@ index 813bd23ac5c83dca7f0f4d2125bfc050521d5340..08d76a9f4d21ff5f634de21554da0d27
  }
 diff --git a/src/main/java/puregero/multipaper/MultiPaperWorldBorderHandler.java b/src/main/java/puregero/multipaper/MultiPaperWorldBorderHandler.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..1d3df885830b956992a70ba3b8ea5bc4440f0e12
+index 0000000000000000000000000000000000000000..1cad3e44446bcd960a9628f66ccad95b18757b4a
 --- /dev/null
 +++ b/src/main/java/puregero/multipaper/MultiPaperWorldBorderHandler.java
 @@ -0,0 +1,76 @@
@@ -1691,14 +1698,14 @@ index 0000000000000000000000000000000000000000..1d3df885830b956992a70ba3b8ea5bc4
 +
 +    private void onWorldBorderChange(Packet<?> packet, ServerLevel level) {
 +        if (!updatingWorldBorder) {
-+            MultiPaper.broadcastPacketToExternalServers(level.getWorld().getName(), new SendUpdatePacket(level.getWorld().getName(), packet));
++            MultiPaper.broadcastPacketToExternalServers(level.getWorld().getName(), new SendUpdatePacket(level.uuid, packet));
 +
 +            // Save the level.dat
 +            level.saveIncrementally(true);
 +        }
 +    }
 +
-+    public static void handle(String world, Packet<?> packet) {
++    public static void handle(java.util.UUID world, Packet<?> packet) {
 +        ServerLevel level = ((CraftWorld) Bukkit.getWorld(world)).getHandle();
 +
 +        updatingWorldBorder = true;
@@ -2100,10 +2107,10 @@ index 0000000000000000000000000000000000000000..95a3823f5d13c29628adfc73a185d43c
 +}
 diff --git a/src/main/java/puregero/multipaper/externalserverprotocol/SendUpdatePacket.java b/src/main/java/puregero/multipaper/externalserverprotocol/SendUpdatePacket.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..cfee3af635094603a3ee14812ffea71548867bc8
+index 0000000000000000000000000000000000000000..01cbc324cb6c9e656cd7851d018d91c1e640b046
 --- /dev/null
 +++ b/src/main/java/puregero/multipaper/externalserverprotocol/SendUpdatePacket.java
-@@ -0,0 +1,63 @@
+@@ -0,0 +1,65 @@
 +package puregero.multipaper.externalserverprotocol;
 +
 +import io.netty.buffer.ByteBuf;
@@ -2120,20 +2127,22 @@ index 0000000000000000000000000000000000000000..cfee3af635094603a3ee14812ffea715
 +import puregero.multipaper.MultiPaperChunkHandler;
 +import puregero.multipaper.MultiPaperWorldBorderHandler;
 +
++import java.util.UUID;
++
 +public class SendUpdatePacket extends ExternalServerPacket {
 +
 +    private static final Logger LOGGER = LogManager.getLogger(SendUpdatePacket.class.getSimpleName());
 +
-+    private final String world;
++    private final UUID world;
 +    private final Packet<?> packet;
 +
-+    public SendUpdatePacket(String world, Packet<?> packet) {
++    public SendUpdatePacket(UUID world, Packet<?> packet) {
 +        this.world = world;
 +        this.packet = packet;
 +    }
 +
 +    public SendUpdatePacket(FriendlyByteBuf in) {
-+        world = in.readUtf();
++        world = in.readUUID();;
 +
 +        byte[] bytes = in.readByteArray();
 +        ByteBuf buf = Unpooled.wrappedBuffer(bytes);
@@ -2145,7 +2154,7 @@ index 0000000000000000000000000000000000000000..cfee3af635094603a3ee14812ffea715
 +
 +    @Override
 +    public void write(FriendlyByteBuf out) {
-+        out.writeUtf(world);
++        out.writeUUID(world);
 +
 +        ConnectionProtocol protocol = ConnectionProtocol.getProtocolForPacket(packet);
 +        Integer id = protocol.getPacketId(PacketFlow.CLIENTBOUND, packet);

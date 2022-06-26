@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: PureGero <puregero@gmail.com>
+Date: Sun, 26 Jun 2022 20:46:01 +0200
+Subject: [PATCH] Add option to not save lighting updates
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ChunkHolder.java b/src/main/java/net/minecraft/server/level/ChunkHolder.java
+index e8347b625be246a03e7e4ca34b393ccbc15ed604..574d10d285560614a04890c9052a997641937f30 100644
+--- a/src/main/java/net/minecraft/server/level/ChunkHolder.java
++++ b/src/main/java/net/minecraft/server/level/ChunkHolder.java
+@@ -307,7 +307,7 @@ public class ChunkHolder {
+             ChunkAccess ichunkaccess = this.getAvailableChunkNow();
+ 
+             if (ichunkaccess != null) {
+-                ichunkaccess.setUnsaved(true);
++                if (!puregero.multipaper.MultiPaperConfig.dontSaveLightingUpdates) ichunkaccess.setUnsaved(true); // MultiPaper
+                 LevelChunk chunk = this.getSendingChunk();
+                 // Paper end - no-tick view distance
+ 
+diff --git a/src/main/java/puregero/multipaper/MultiPaperConfig.java b/src/main/java/puregero/multipaper/MultiPaperConfig.java
+index 0492b0117656028b2654f1dc42902f392c121d8b..44d2129ea8f28da3815129b55e3fd9622f345c76 100644
+--- a/src/main/java/puregero/multipaper/MultiPaperConfig.java
++++ b/src/main/java/puregero/multipaper/MultiPaperConfig.java
+@@ -215,4 +215,9 @@ public class MultiPaperConfig {
+    private static void syncPermissions() {
+        syncPermissions = getBoolean("syncPermissions", true);
+    }
++
++    public static boolean dontSaveLightingUpdates;
++    private static void dontSaveLightingUpdates() {
++        dontSaveLightingUpdates = getBoolean("optimizations.dontSaveLightingUpdates", false);
++    }
+ }

@@ -72,7 +72,7 @@ index ceaad2b5af855905ad1b87e7308fb354304819b1..874cec1b56060cbe3afd7923fc00b4a9
          this.connection = connection;
      }
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index 0ac062f1c9d3c3c354d1e120ba2eb222a00d2ade..d92dc894444fbb4d53def08da46fd281cdb38d3e 100644
+index 54b7a4fd7587fcd2665d764d908ee8566e9e3947..9a54f067cb45c0fd2f065934cc04f2205f8527af 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
 @@ -180,6 +180,10 @@ public class MultiPaper {
