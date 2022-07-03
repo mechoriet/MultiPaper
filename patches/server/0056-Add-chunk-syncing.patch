@@ -863,7 +863,7 @@ index 96f62ac0e95c1db86f6e53eb0397ef79aefed914..ec325d9fee73e64a043f3e9a9d965e87
 +    }
  }
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index 962263a2f71c209b2b160a3d448bb9b3f267a114..bb5b4cd8da93a9034e3b43027fa5c4f54ff07f3f 100644
+index 962263a2f71c209b2b160a3d448bb9b3f267a114..32024a25fef71df6f09a7af0afb94065cac87f9d 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
 @@ -1,29 +1,63 @@
@@ -1160,7 +1160,7 @@ index 962263a2f71c209b2b160a3d448bb9b3f267a114..bb5b4cd8da93a9034e3b43027fa5c4f5
 +        return getChunkAccess(world, pos.getX() >> 4, pos.getZ() >> 4);
 +    }
 +
-+    public static ChunkHolder getChunkHolder(String world, BlockPos pos) {
++    public static ChunkHolder getChunkHolder(java.util.UUID world, BlockPos pos) {
 +        return getChunkHolder(world, pos.getX() >> 4, pos.getZ() >> 4);
 +    }
 +
@@ -1192,7 +1192,7 @@ index 962263a2f71c209b2b160a3d448bb9b3f267a114..bb5b4cd8da93a9034e3b43027fa5c4f5
  }
 diff --git a/src/main/java/puregero/multipaper/MultiPaperChunkHandler.java b/src/main/java/puregero/multipaper/MultiPaperChunkHandler.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..14685c638447b7beffb7ade78a1c8e8c5f3dc63c
+index 0000000000000000000000000000000000000000..60b99f963c85bb4eb89253be25338a432436b2db
 --- /dev/null
 +++ b/src/main/java/puregero/multipaper/MultiPaperChunkHandler.java
 @@ -0,0 +1,263 @@
@@ -1278,7 +1278,7 @@ index 0000000000000000000000000000000000000000..14685c638447b7beffb7ade78a1c8e8c
 +        MultiPaper.runSync(() -> {
 +            for (BlockEntity blockEntity : blockEntitiesToBroadcast) {
 +                if (blockEntity != null) {
-+                    MultiPaperChunkHandler.onBlockUpdate(MultiPaper.getChunkHolder(blockEntity.getLevel().getWorld().getName(), blockEntity.getBlockPos()), ClientboundBlockEntityDataPacket.create(blockEntity, BlockEntity::saveWithFullMetadata));
++                    MultiPaperChunkHandler.onBlockUpdate(MultiPaper.getChunkHolder(((ServerLevel) blockEntity.getLevel()).uuid, blockEntity.getBlockPos()), ClientboundBlockEntityDataPacket.create(blockEntity, BlockEntity::saveWithFullMetadata));
 +                }
 +            }
 +            blockEntitiesToBroadcast.clear();

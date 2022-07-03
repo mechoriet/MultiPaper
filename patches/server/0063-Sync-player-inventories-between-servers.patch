@@ -27,7 +27,7 @@ index ad6798934ed30dafadefff93a6dd5a6c00acb884..7d520326b73959a55be016844f037388
      public boolean wonGame;
      public int containerUpdateDelay; // Paper // MultiPaper - make public
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index b96107e048deadbacaa3dd031e63edf7a8e5bc09..f566fa98f8d4379b451fbaa6819bc6a2be17aa5d 100644
+index ed8ffbd4a2c70d89041844a16e2f991bea9ff4e7..89c3186560fda25ff23fed54b71b4c199e914a1b 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -229,6 +229,7 @@ import org.bukkit.inventory.InventoryView;
@@ -393,7 +393,7 @@ index 3d61be7dca76a0eea39bce8f7455176d2f6b9a98..3ba42c9ab0d3bafb6e4d5273dcb0e5e5
 +    }
  }
 diff --git a/src/main/java/puregero/multipaper/MultiPaper.java b/src/main/java/puregero/multipaper/MultiPaper.java
-index debf29194dddf9429eafec413a76a7f192216072..6d83c39f2a2a91f617d7a6abbf43dbaf3cf786d9 100644
+index d4e89bf5565574725f1daace43d029e425eb2128..4a8cc8d42572a0f81dcda5828c6d7cd33ed5ca1c 100644
 --- a/src/main/java/puregero/multipaper/MultiPaper.java
 +++ b/src/main/java/puregero/multipaper/MultiPaper.java
 @@ -5,6 +5,7 @@ import net.minecraft.world.Container;
@@ -450,10 +450,10 @@ index debf29194dddf9429eafec413a76a7f192216072..6d83c39f2a2a91f617d7a6abbf43dbaf
  }
 diff --git a/src/main/java/puregero/multipaper/MultiPaperInventoryHandler.java b/src/main/java/puregero/multipaper/MultiPaperInventoryHandler.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..bfe3d25c5b2cd587a2c5277e9a2e62b977023867
+index 0000000000000000000000000000000000000000..2bf866ff972e58ed4a7fb9e142ae7a064065ef99
 --- /dev/null
 +++ b/src/main/java/puregero/multipaper/MultiPaperInventoryHandler.java
-@@ -0,0 +1,355 @@
+@@ -0,0 +1,359 @@
 +package puregero.multipaper;
 +
 +import net.minecraft.nbt.CompoundTag;
@@ -743,17 +743,21 @@ index 0000000000000000000000000000000000000000..bfe3d25c5b2cd587a2c5277e9a2e62b9
 +                    items.add(item);
 +
 +                    if (!MultiPaper.isRealPlayer(player)) {
-+                        inventoryComponent.dirty[i] = false;
-+                        inventoryComponent.get(i).dirty = false;
-+                        inventoryComponent.lastItems.set(i, inventoryComponent.get(i).copy());
++                        CompoundTag replacingItem = new CompoundTag();
++                        inventoryComponent.lastItems.get(i).save(replacingItem);
++                        item.put("Replacing", replacingItem);
 +                    }
-+                    if (!items.isEmpty()) {
-+                        CompoundTag itemsRoot = new CompoundTag();
-+                        itemsRoot.put("items", items);
-+                        MultiPaper.broadcastPacketToExternalServers(player, new PlayerInventoryUpdatePacket(player, inventoryComponent.name, itemsRoot));
-+                        player.detectEquipmentUpdates();
-+                    }
++
++                    inventoryComponent.dirty[i] = false;
++                    inventoryComponent.get(i).dirty = false;
++                    inventoryComponent.lastItems.set(i, inventoryComponent.get(i).copy());
 +                }
++            }
++            if (!items.isEmpty()) {
++                CompoundTag itemsRoot = new CompoundTag();
++                itemsRoot.put("items", items);
++                MultiPaper.broadcastPacketToExternalServers(player, new PlayerInventoryUpdatePacket(player, inventoryComponent.name, itemsRoot));
++                player.detectEquipmentUpdates();
 +            }
 +        }
 +    }
